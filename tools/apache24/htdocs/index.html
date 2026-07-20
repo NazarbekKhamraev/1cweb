@@ -578,7 +578,16 @@
     return { base: "http://localhost:8081/test1/hs/dashboard", user: "", pass: "" };
   }
   function loadCfg() {
-    try { var raw = localStorage.getItem(LS_KEY); if (raw) return Object.assign(defaultCfg(), JSON.parse(raw)); } catch (e) {}
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (raw) {
+        var c = Object.assign(defaultCfg(), JSON.parse(raw));
+        // self-heal a base saved by an older build that derived it from location.origin
+        // (always wrong once this dashboard is hosted somewhere other than the 1C server itself)
+        if (!/^https?:\/\/localhost(:\d+)?\//i.test(c.base)) c.base = defaultCfg().base;
+        return c;
+      }
+    } catch (e) {}
     return defaultCfg();
   }
   function saveCfg(c) { localStorage.setItem(LS_KEY, JSON.stringify(c)); }
