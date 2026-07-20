@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "bsl-language-server": {
+      "command": "java",
+      "args": ["-jar", "C:/tools/bsl-language-server.jar", "mcp"]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+# 1C platform / Apache runtime - vendor binaries, not source (huge, and licensed separately)
+tools/apache24/*
+!tools/apache24/htdocs
+tools/apache24/htdocs/*
+!tools/apache24/htdocs/index.html
+
+# scratch/working area: platform installs, db dumps, logs, real business data samples
+.testdb/
+
+# KOT Test Toolkit auto-generated runtime infobase (binary .1CD, may hold real data)
+.vscode/kot-runtime/
+
+# one-off diagnostic EPF builds (not part of the extension)
+build/
+
+# BSL Language Server analysis output (regenerated on demand)
+bsl-report/
+
+# local project/tooling config with credentials
+.v8-project.json
+
+# 1C build artifacts
+*.cf
+*.cfe
+*.dt
+*.epf
+*.erf
+
+# editor/OS noise
+Thumbs.db
+.DS_Store

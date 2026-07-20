@@ -1,0 +1,8 @@
+{
+    "kotTestToolkit.platforms.catalog": [
+        {
+            "name": "1C:Enterprise 8.5.1.1343",
+            "clientExePath": "C:\\Program Files\\1cv8\\8.5.1.1343\\bin\\1cv8c.exe"
+        }
+    ]
+}

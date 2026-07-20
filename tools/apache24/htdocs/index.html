@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --sidebar-bg:     #f3f2ee;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6;
+    --series-2:       #eb6834;
+    --diverging-pos:  #2a78d6;
+    --diverging-neg:  #e34948;
+    --good:           #006300;
+    --critical:       #d03b3b;
+    --tile-shadow:    0 1px 2px rgba(11,11,11,0.06), 0 1px 1px rgba(11,11,11,0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page-plane: #0d0d0d; --sidebar-bg: #151514;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926;
+      --diverging-pos: #3987e5; --diverging-neg: #e66767;
+      --good: #0ca30c; --critical: #e66767;
+    }
+  }
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page-plane: #0d0d0d; --sidebar-bg: #151514;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926;
+    --diverging-pos: #3987e5; --diverging-neg: #e66767;
+    --good: #0ca30c; --critical: #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100%;
+    background: var(--page-plane); color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  body { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 226px; flex: none; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border); padding: 16px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .sidebar .brand { font-size: 15px; font-weight: 700; padding: 4px 10px 14px; }
+  .sidebar .brand .sub { display: block; font-size: 11px; font-weight: 400; color: var(--text-muted); margin-top: 2px; }
+  .menu-item {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px;
+    color: var(--text-secondary); text-decoration: none; font-size: 13.5px; font-weight: 550;
+    cursor: pointer; user-select: none;
+  }
+  .menu-item .ico { width: 18px; text-align: center; font-size: 14px; }
+  .menu-item:hover { background: var(--gridline); color: var(--text-primary); }
+  .menu-item.active { background: var(--series-1); color: #fff; }
+
+  .sidebar-foot { margin-top: auto; padding: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .main { flex: 1; min-width: 0; padding: 20px 24px 64px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  header.top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  header.top h1 { font-size: 19px; font-weight: 650; margin: 0; }
+  header.top .sub { color: var(--text-secondary); font-size: 12.5px; margin-top: 2px; }
+
+  .btn {
+    appearance: none; border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-primary); border-radius: 8px; padding: 7px 12px;
+    font-size: 13px; font-weight: 550; cursor: pointer; font-family: inherit;
+  }
+  .btn:hover { background: var(--gridline); }
+  .btn.primary { background: var(--series-1); color: #fff; border-color: transparent; }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.small { padding: 4px 9px; font-size: 12px; }
+  .icon-btn {
+    appearance: none; border: 1px solid var(--border); background: var(--surface-1);
+    color: var(--text-secondary); border-radius: 8px; min-width: 32px; height: 32px;
+    cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; padding: 0 8px;
+  }
+  .icon-btn:hover { background: var(--gridline); }
+
+  .lang-group {
+    display: inline-flex; border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; height: 32px;
+  }
+  .lang-btn {
+    appearance: none; border: none; background: var(--surface-1); color: var(--text-secondary);
+    font-family: inherit; font-size: 11.5px; font-weight: 700; padding: 0 10px; cursor: pointer;
+    border-left: 1px solid var(--border);
+  }
+  .lang-btn:first-child { border-left: none; }
+  .lang-btn:hover { background: var(--gridline); }
+  .lang-btn.active { background: var(--series-1); color: #fff; }
+
+  .filters {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 12px; margin-bottom: 18px;
+    box-shadow: var(--tile-shadow);
+  }
+  .filters label { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+  .filters input[type="date"], .filters input[type="month"] {
+    font-family: inherit; font-size: 13px; padding: 5px 7px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+  }
+  .filters .preset-row { display: flex; gap: 4px; }
+  .filters .preset-row .btn.active { background: var(--series-1); color: #fff; border-color: transparent; }
+  .filters .spacer { flex: 1; }
+
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 18px;
+  }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; box-shadow: var(--tile-shadow);
+  }
+  .tile .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .tile .value { font-size: 23px; font-weight: 650; letter-spacing: -0.01em; }
+  .tile .value.good { color: var(--good); }
+  .tile .value.critical { color: var(--critical); }
+  .tile .note { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; margin-bottom: 18px; box-shadow: var(--tile-shadow);
+  }
+  .card .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px; gap: 8px; flex-wrap: wrap;
+  }
+  .card h2 { font-size: 14px; font-weight: 650; margin: 0; }
+  .card .card-sub { font-size: 12px; color: var(--text-muted); margin: 2px 0 12px; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--text-secondary); }
+  .legend .key { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  .chart-wrap { position: relative; }
+  svg.chart { display: block; width: 100%; height: auto; overflow: visible; }
+  .bar { transition: opacity .1s; }
+  .bar:hover { opacity: 0.82; }
+  .axis-label { fill: var(--text-muted); font-size: 10px; }
+  .grid-line { stroke: var(--gridline); stroke-width: 1; }
+  .baseline-line { stroke: var(--baseline); stroke-width: 1; }
+
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--text-primary);
+    color: var(--surface-1); font-size: 12px; padding: 6px 9px; border-radius: 7px;
+    transform: translate(-50%, -100%); white-space: nowrap; z-index: 5;
+    opacity: 0; transition: opacity .08s; box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  }
+  .tooltip.show { opacity: 1; }
+  .tooltip .t-val { font-weight: 650; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data-table th, table.data-table td {
+    text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--gridline);
+    font-variant-numeric: tabular-nums;
+  }
+  table.data-table th:first-child, table.data-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.data-table th { color: var(--text-muted); font-weight: 550; font-size: 11px; }
+
+  .table-toggle-wrap { display: none; margin-top: 10px; }
+  .table-toggle-wrap.show { display: block; }
+
+  .seg-group {
+    display: inline-flex; border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden; height: 30px; flex: none;
+  }
+  .seg-btn {
+    appearance: none; border: none; background: var(--surface-1); color: var(--text-secondary);
+    font-family: inherit; font-size: 12px; font-weight: 600; padding: 0 12px; cursor: pointer;
+    border-left: 1px solid var(--border);
+  }
+  .seg-btn:first-child { border-left: none; }
+  .seg-btn:hover { background: var(--gridline); }
+  .seg-btn.active { background: var(--series-1); color: #fff; }
+
+  .period-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .period-row .month-pick {
+    font-family: inherit; font-size: 13px; padding: 5px 7px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+  }
+  .period-row .month-pick.hide { display: none; }
+
+  table.data-table tfoot td {
+    font-weight: 700; border-top: 2px solid var(--border); border-bottom: none;
+    color: var(--text-primary); font-variant-numeric: tabular-nums;
+  }
+  table.data-table tfoot td:first-child { font-variant-numeric: normal; }
+
+  .empty { color: var(--text-muted); font-size: 13px; padding: 24px 0; text-align: center; }
+  .data-note { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+  .err-banner {
+    background: var(--critical); color: #fff; border-radius: 10px; padding: 10px 14px;
+    font-size: 13px; margin-bottom: 16px; display: none;
+  }
+  .err-banner.show { display: block; }
+
+  .settings-panel {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+    align-items: center; justify-content: center; z-index: 50;
+  }
+  .settings-panel.show { display: flex; }
+  .settings-box {
+    background: var(--surface-1); border-radius: 14px; padding: 20px; width: 340px;
+    max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .settings-box h3 { margin: 0 0 14px; font-size: 15px; }
+  .settings-box label { display: block; font-size: 12px; color: var(--text-secondary); margin: 10px 0 4px; }
+  .settings-box input {
+    width: 100%; font-family: inherit; font-size: 13px; padding: 7px 9px;
+    border-radius: 7px; border: 1px solid var(--border); background: var(--page-plane);
+    color: var(--text-primary);
+  }
+  .settings-box .row-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+  .sidebar-toggle { display: none; }
+  @media (max-width: 860px) {
+    .sidebar {
+      position: fixed; left: 0; top: 0; z-index: 40; transform: translateX(-100%);
+      transition: transform .18s;
+    }
+    .sidebar.open { transform: translateX(0); box-shadow: 0 0 0 2000px rgba(0,0,0,.35); }
+    .sidebar-toggle { display: inline-flex; }
+    .main { padding: 16px 14px 48px; }
+  }
+  @media (max-width: 520px) {
+    .filters { flex-direction: column; align-items: stretch; }
+    .filters .spacer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar">
+  <div class="brand">Dashboard<span class="sub" data-i18n="brand_sub"></span></div>
+
+  <a class="menu-item" data-page="bank"><span class="ico">&#127974;</span><span data-i18n="nav_bank"></span></a>
+  <a class="menu-item" data-page="sotuv"><span class="ico">&#128176;</span><span data-i18n="nav_sotuv"></span></a>
+  <a class="menu-item" data-page="xaridlar"><span class="ico">&#128722;</span><span data-i18n="nav_xaridlar"></span></a>
+  <a class="menu-item" data-page="sklad"><span class="ico">&#128230;</span><span data-i18n="nav_sklad"></span></a>
+  <a class="menu-item" data-page="ishlab"><span class="ico">&#127981;</span><span data-i18n="nav_ishlab"></span></a>
+  <a class="menu-item" data-page="vositalar"><span class="ico">&#128666;</span><span data-i18n="nav_vositalar"></span></a>
+  <a class="menu-item" data-page="zarplata"><span class="ico">&#128101;</span><span data-i18n="nav_zarplata"></span></a>
+  <a class="menu-item" data-page="hisobotlar"><span class="ico">&#128202;</span><span data-i18n="nav_hisobotlar"></span></a>
+</nav>
+
+<div class="main">
+
+  <header class="top">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="icon-btn sidebar-toggle" id="sidebarToggle">&#9776;</button>
+      <div>
+        <h1 id="pageTitle">—</h1>
+        <div class="sub" id="pageSub">—</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="icon-btn" id="themeToggle" title="Theme">&#9680;</button>
+      <div class="lang-group" id="langGroup">
+        <button class="lang-btn" data-lang="uz">UZ</button>
+        <button class="lang-btn" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button class="icon-btn" id="settingsBtn" title="Settings">&#9881;</button>
+      <button class="btn primary" id="refreshBtn" data-i18n="btn_refresh"></button>
+    </div>
+  </header>
+
+  <div class="err-banner" id="errBanner"></div>
+
+  <div class="filters">
+    <label data-i18n="filter_period"></label>
+    <div class="preset-row" id="presetRow">
+      <button class="btn small" data-preset="7" data-i18n="preset_7"></button>
+      <button class="btn small active" data-preset="30" data-i18n="preset_30"></button>
+      <button class="btn small" data-preset="90" data-i18n="preset_90"></button>
+    </div>
+    <input type="date" id="dateFrom">
+    <span style="color:var(--text-muted); font-size:12px;">—</span>
+    <input type="date" id="dateTo">
+    <div class="spacer"></div>
+    <label data-i18n="filter_month"></label>
+    <input type="month" id="periodMonth">
+    <label style="margin-left:4px;" data-i18n="filter_date"></label>
+    <input type="date" id="onDate">
+  </div>
+
+  <!-- ===================== BANK ===================== -->
+  <section class="page" id="page-bank">
+    <div class="kpi-row">
+      <div class="tile"><div class="label" data-i18n="kpi_inflow"></div><div class="value good" id="bankInflow">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_outflow"></div><div class="value critical" id="bankOutflow">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_netflow"></div><div class="value" id="bankNet">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-i18n="bank_flow_title"></h2><div class="card-sub" id="bankFlowSub">&nbsp;</div></div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="legend">
+            <span class="key"><span class="swatch" style="background:var(--series-1)"></span><span data-i18n="legend_inflow"></span></span>
+            <span class="key"><span class="swatch" style="background:var(--series-2)"></span><span data-i18n="legend_outflow"></span></span>
+          </div>
+          <button class="btn small" data-toggle="bankFlowTableWrap" data-i18n="btn_table"></button>
+        </div>
+      </div>
+      <div class="chart-wrap" id="bankFlowWrap"></div>
+      <div class="table-toggle-wrap" id="bankFlowTableWrap"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="bank_balance_title"></h2></div></div>
+      <div class="chart-wrap" id="bankWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== SOTUV ===================== -->
+  <section class="page" id="page-sotuv">
+    <div class="kpi-row">
+      <div class="tile"><div class="label" data-i18n="kpi_total_sales"></div><div class="value" id="sotuvTotal">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_docs_count"></div><div class="value" id="sotuvDocs">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_avg_daily"></div><div class="value" id="sotuvAvg">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-i18n="nav_sotuv"></h2><div class="card-sub" id="sotuvChartSub">&nbsp;</div></div>
+        <div class="seg-group view-switch" data-page="sotuv">
+          <button class="seg-btn active" data-view="chart" data-i18n="btn_chart"></button>
+          <button class="seg-btn" data-view="table" data-i18n="btn_table"></button>
+        </div>
+      </div>
+      <div class="period-row" data-page="sotuv">
+        <div class="seg-group period-switch">
+          <button class="seg-btn active" data-period="day" data-i18n="period_day"></button>
+          <button class="seg-btn" data-period="month" data-i18n="period_month"></button>
+        </div>
+        <input type="month" class="month-pick hide" id="sotuvMonthPick">
+      </div>
+      <div class="chart-wrap" id="sotuvChartWrap"></div>
+      <div class="table-toggle-wrap" id="sotuvTableWrap"></div>
+    </div>
+    <div class="data-note" data-i18n="note_sotuv"></div>
+  </section>
+
+  <!-- ===================== XARIDLAR ===================== -->
+  <section class="page" id="page-xaridlar">
+    <div class="kpi-row">
+      <div class="tile"><div class="label" data-i18n="kpi_total_purchase"></div><div class="value" id="xaridTotal">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_docs_count"></div><div class="value" id="xaridDocs">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_avg_daily"></div><div class="value" id="xaridAvg">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-i18n="nav_xaridlar"></h2><div class="card-sub" id="xaridChartSub">&nbsp;</div></div>
+        <div class="seg-group view-switch" data-page="xaridlar">
+          <button class="seg-btn active" data-view="chart" data-i18n="btn_chart"></button>
+          <button class="seg-btn" data-view="table" data-i18n="btn_table"></button>
+        </div>
+      </div>
+      <div class="period-row" data-page="xaridlar">
+        <div class="seg-group period-switch">
+          <button class="seg-btn active" data-period="day" data-i18n="period_day"></button>
+          <button class="seg-btn" data-period="month" data-i18n="period_month"></button>
+        </div>
+        <input type="month" class="month-pick hide" id="xaridlarMonthPick">
+      </div>
+      <div class="chart-wrap" id="xaridChartWrap"></div>
+      <div class="table-toggle-wrap" id="xaridTableWrap"></div>
+    </div>
+    <div class="data-note" data-i18n="note_xaridlar"></div>
+  </section>
+
+  <!-- ===================== SKLAD ===================== -->
+  <section class="page" id="page-sklad">
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="nav_sklad"></h2><div class="card-sub">10, 41, 43, 45</div></div></div>
+      <div class="chart-wrap" id="skladWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ISHLAB CHIQARISH ===================== -->
+  <section class="page" id="page-ishlab">
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="nav_ishlab"></h2><div class="card-sub">20, 23, 25, 26</div></div></div>
+      <div class="chart-wrap" id="ishlabWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== OS VA NMA ===================== -->
+  <section class="page" id="page-vositalar">
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="nav_vositalar"></h2><div class="card-sub">01, 02, 04, 05, 08</div></div></div>
+      <div class="chart-wrap" id="vositalarWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== ZARPLATA ===================== -->
+  <section class="page" id="page-zarplata">
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="nav_zarplata"></h2><div class="card-sub">70</div></div></div>
+      <div class="chart-wrap" id="zarplataWrap"></div>
+    </div>
+  </section>
+
+  <!-- ===================== HISOBOTLAR ===================== -->
+  <section class="page" id="page-hisobotlar">
+    <div class="kpi-row">
+      <div class="tile"><div class="label" data-i18n="kpi_revenue"></div><div class="value" id="hrRevenue">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_cogs"></div><div class="value" id="hrCogs">—</div></div>
+      <div class="tile"><div class="label" data-i18n="kpi_profit"></div><div class="value" id="hrProfit">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="nav_hisobotlar"></h2><div class="card-sub" id="hrSub">&nbsp;</div></div></div>
+      <div class="chart-wrap" id="hrChartWrap"></div>
+    </div>
+    <div class="data-note" data-i18n="note_hisobotlar"></div>
+  </section>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-box">
+    <h3 data-i18n="settings_title"></h3>
+    <label data-i18n="settings_api"></label>
+    <input type="text" id="cfgBase" placeholder="http://localhost:8081/test1/hs/dashboard">
+    <label data-i18n="settings_login"></label>
+    <input type="text" id="cfgUser" placeholder="web_api">
+    <label data-i18n="settings_pass"></label>
+    <input type="password" id="cfgPass">
+    <div class="row-btns">
+      <button class="btn" id="settingsCancel" data-i18n="settings_cancel"></button>
+      <button class="btn primary" id="settingsSave" data-i18n="settings_save"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= i18n =================
+  var DICT = {
+    uz: {
+      brand_sub: "1C Buxgalteriya — WebDashboardAPI",
+      nav_bank: "Bank va kassa", nav_sotuv: "Sotuv", nav_xaridlar: "Xaridlar",
+      nav_sklad: "Sklad", nav_ishlab: "Ishlab chiqarish", nav_vositalar: "OS va NMA",
+      nav_zarplata: "Zarplata va kadrlar", nav_hisobotlar: "Hisobotlar",
+      sub_bank: "Pul mablag'lari holati", sub_sotuv: "Kunlik sotuv hisoboti",
+      sub_xaridlar: "Kunlik xarid hisoboti", sub_sklad: "Tovar-moddiy zaxiralar",
+      sub_ishlab: "Ishlab chiqarish xarajatlari", sub_vositalar: "Asosiy vositalar va nomoddiy aktivlar",
+      sub_zarplata: "Xodimlar bilan hisob-kitob", sub_hisobotlar: "Oylik moliyaviy natija",
+      btn_refresh: "Yangilash", btn_table: "Jadval", btn_chart: "Diagramma",
+      period_day: "Kunlar", period_month: "Oy",
+      col_date: "Sana", col_docs: "Hujjatlar", row_total: "Jami",
+      filter_period: "Davr:", filter_month: "Oy:", filter_date: "Sana:",
+      preset_7: "7 kun", preset_30: "30 kun", preset_90: "90 kun",
+      kpi_total_sales: "Jami sotuv", kpi_docs_count: "Hujjatlar soni", kpi_avg_daily: "O'rtacha kunlik",
+      kpi_total_purchase: "Jami xarid", kpi_revenue: "Daromad", kpi_cogs: "Tannarx", kpi_profit: "Foyda",
+      kpi_inflow: "Kirim (davr)", kpi_outflow: "Chiqim (davr)", kpi_netflow: "Sof oqim",
+      bank_flow_title: "Kunlik kirim-chiqim", bank_balance_title: "Hisoblar balansi",
+      legend_sales: "Sotuv", legend_expense: "Xarid", legend_inflow: "Kirim", legend_outflow: "Chiqim",
+      empty_period: "Tanlangan davrda ma'lumot topilmadi", empty_category: "Bu bo'limda ma'lumot topilmadi",
+      settings_title: "Ulanish sozlamalari", settings_api: "API manzili", settings_login: "Login",
+      settings_pass: "Parol", settings_cancel: "Bekor qilish", settings_save: "Saqlash",
+      err_load: "Ma'lumot yuklanmadi", err_hint: "sozlamalarni tekshiring (API manzili, login, parol)",
+      note_sotuv: "Manba: Hujjat.РеализацияТоваровУслуг", note_xaridlar: "Manba: Hujjat.ПоступлениеТоваровУслуг",
+      note_hisobotlar: "Manba: РегистрБухгалтерии.Хозрасчетный, 90-hisob",
+      unit_bln: "mlrd", unit_mln: "mln", unit_ming: "ming", unit_som: "so'm", days_word: "kun"
+    },
+    ru: {
+      brand_sub: "1C Бухгалтерия — WebDashboardAPI",
+      nav_bank: "Банк и касса", nav_sotuv: "Продажи", nav_xaridlar: "Покупки",
+      nav_sklad: "Склад", nav_ishlab: "Производство", nav_vositalar: "ОС и НМА",
+      nav_zarplata: "Зарплата и кадры", nav_hisobotlar: "Отчеты",
+      sub_bank: "Состояние денежных средств", sub_sotuv: "Отчёт по продажам",
+      sub_xaridlar: "Отчёт по закупкам", sub_sklad: "Товарно-материальные запасы",
+      sub_ishlab: "Затраты на производство", sub_vositalar: "Основные средства и НМА",
+      sub_zarplata: "Расчёты с персоналом", sub_hisobotlar: "Месячный финансовый результат",
+      btn_refresh: "Обновить", btn_table: "Таблица", btn_chart: "Диаграмма",
+      period_day: "По дням", period_month: "Месяц",
+      col_date: "Дата", col_docs: "Документы", row_total: "Итого",
+      filter_period: "Период:", filter_month: "Месяц:", filter_date: "Дата:",
+      preset_7: "7 дней", preset_30: "30 дней", preset_90: "90 дней",
+      kpi_total_sales: "Всего продаж", kpi_docs_count: "Кол-во документов", kpi_avg_daily: "Среднедневное",
+      kpi_total_purchase: "Всего закупок", kpi_revenue: "Выручка", kpi_cogs: "Себестоимость", kpi_profit: "Прибыль",
+      kpi_inflow: "Приход (период)", kpi_outflow: "Расход (период)", kpi_netflow: "Чистый поток",
+      bank_flow_title: "Приход и расход по дням", bank_balance_title: "Баланс по счетам",
+      legend_sales: "Продажи", legend_expense: "Закупки", legend_inflow: "Приход", legend_outflow: "Расход",
+      empty_period: "Нет данных за выбранный период", empty_category: "Нет данных в этом разделе",
+      settings_title: "Настройки подключения", settings_api: "Адрес API", settings_login: "Логин",
+      settings_pass: "Пароль", settings_cancel: "Отмена", settings_save: "Сохранить",
+      err_load: "Не удалось загрузить данные", err_hint: "проверьте настройки (адрес API, логин, пароль)",
+      note_sotuv: "Источник: Документ.РеализацияТоваровУслуг", note_xaridlar: "Источник: Документ.ПоступлениеТоваровУслуг",
+      note_hisobotlar: "Источник: РегистрБухгалтерии.Хозрасчетный, счёт 90",
+      unit_bln: "млрд", unit_mln: "млн", unit_ming: "тыс", unit_som: "сум", days_word: "дн."
+    },
+    en: {
+      brand_sub: "1C Accounting — WebDashboardAPI",
+      nav_bank: "Bank & Cash", nav_sotuv: "Sales", nav_xaridlar: "Purchases",
+      nav_sklad: "Warehouse", nav_ishlab: "Production", nav_vositalar: "Fixed Assets",
+      nav_zarplata: "Payroll & HR", nav_hisobotlar: "Reports",
+      sub_bank: "Cash and bank balances", sub_sotuv: "Daily sales report",
+      sub_xaridlar: "Daily purchases report", sub_sklad: "Inventory / stock value",
+      sub_ishlab: "Production costs", sub_vositalar: "Fixed assets and intangibles",
+      sub_zarplata: "Payroll settlements", sub_hisobotlar: "Monthly financial result",
+      btn_refresh: "Refresh", btn_table: "Table", btn_chart: "Chart",
+      period_day: "Daily", period_month: "Month",
+      col_date: "Date", col_docs: "Documents", row_total: "Total",
+      filter_period: "Period:", filter_month: "Month:", filter_date: "Date:",
+      preset_7: "7 days", preset_30: "30 days", preset_90: "90 days",
+      kpi_total_sales: "Total sales", kpi_docs_count: "Documents", kpi_avg_daily: "Daily average",
+      kpi_total_purchase: "Total purchases", kpi_revenue: "Revenue", kpi_cogs: "COGS", kpi_profit: "Profit",
+      kpi_inflow: "Inflow (period)", kpi_outflow: "Outflow (period)", kpi_netflow: "Net flow",
+      bank_flow_title: "Daily cash in/out", bank_balance_title: "Account balances",
+      legend_sales: "Sales", legend_expense: "Purchases", legend_inflow: "Inflow", legend_outflow: "Outflow",
+      empty_period: "No data for the selected period", empty_category: "No data in this section",
+      settings_title: "Connection settings", settings_api: "API base URL", settings_login: "Username",
+      settings_pass: "Password", settings_cancel: "Cancel", settings_save: "Save",
+      err_load: "Failed to load data", err_hint: "check settings (API URL, login, password)",
+      note_sotuv: "Source: Document.SalesInvoice", note_xaridlar: "Source: Document.GoodsReceipt",
+      note_hisobotlar: "Source: AccountingRegister.Chart, account 90",
+      unit_bln: "bn", unit_mln: "mln", unit_ming: "K", unit_som: "UZS", days_word: "days"
+    }
+  };
+  var lang = localStorage.getItem("dashboardLang") || "uz";
+  function t(key) { return (DICT[lang] && DICT[lang][key]) || key; }
+  function applyI18n() {
+    document.documentElement.setAttribute("lang", lang);
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll(".lang-btn").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-lang") === lang);
+    });
+  }
+  document.getElementById("langGroup").addEventListener("click", function (e) {
+    var btn = e.target.closest(".lang-btn");
+    if (!btn) return;
+    lang = btn.getAttribute("data-lang");
+    localStorage.setItem("dashboardLang", lang);
+    applyI18n();
+    updateHeader(currentPage());
+    if (cache.sales) renderPage(currentPage());
+  });
+
+  // ================= cfg =================
+  var LS_KEY = "dashboardCfg";
+  function defaultCfg() {
+    return { base: window.location.origin + "/test1/hs/dashboard", user: "", pass: "" };
+  }
+  function loadCfg() {
+    try { var raw = localStorage.getItem(LS_KEY); if (raw) return Object.assign(defaultCfg(), JSON.parse(raw)); } catch (e) {}
+    return defaultCfg();
+  }
+  function saveCfg(c) { localStorage.setItem(LS_KEY, JSON.stringify(c)); }
+  var cfg = loadCfg();
+
+  // ================= theme =================
+  function applyTheme(tval) {
+    if (tval) document.documentElement.setAttribute("data-theme", tval);
+    else document.documentElement.removeAttribute("data-theme");
+  }
+  applyTheme(localStorage.getItem("dashboardTheme") || "");
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next = cur === "dark" ? "light" : (cur === "light" ? "" : "dark");
+    applyTheme(next);
+    localStorage.setItem("dashboardTheme", next);
+  });
+
+  // ================= sidebar (mobile) =================
+  var sidebar = document.getElementById("sidebar");
+  document.getElementById("sidebarToggle").addEventListener("click", function () { sidebar.classList.toggle("open"); });
+
+  // ================= settings modal =================
+  var settingsPanel = document.getElementById("settingsPanel");
+  document.getElementById("settingsBtn").addEventListener("click", function () {
+    document.getElementById("cfgBase").value = cfg.base;
+    document.getElementById("cfgUser").value = cfg.user;
+    document.getElementById("cfgPass").value = cfg.pass;
+    settingsPanel.classList.add("show");
+  });
+  document.getElementById("settingsCancel").addEventListener("click", function () { settingsPanel.classList.remove("show"); });
+  document.getElementById("settingsSave").addEventListener("click", function () {
+    cfg.base = document.getElementById("cfgBase").value.trim() || defaultCfg().base;
+    cfg.user = document.getElementById("cfgUser").value.trim();
+    cfg.pass = document.getElementById("cfgPass").value;
+    saveCfg(cfg);
+    settingsPanel.classList.remove("show");
+    loadAll();
+  });
+
+  // ================= routing =================
+  var PAGES = ["bank", "sotuv", "xaridlar", "sklad", "ishlab", "vositalar", "zarplata", "hisobotlar"];
+  function currentPage() {
+    var h = window.location.hash.replace("#", "");
+    return PAGES.indexOf(h) >= 0 ? h : "bank";
+  }
+  function updateHeader(name) {
+    document.getElementById("pageTitle").textContent = t("nav_" + name);
+    document.getElementById("pageSub").textContent = t("sub_" + name);
+  }
+  function setActivePage(name) {
+    if (PAGES.indexOf(name) < 0) name = "bank";
+    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
+    document.querySelectorAll(".menu-item").forEach(function (m) { m.classList.remove("active"); });
+    var pageEl = document.getElementById("page-" + name);
+    if (pageEl) pageEl.classList.add("active");
+    var menuEl = document.querySelector('.menu-item[data-page="' + name + '"]');
+    if (menuEl) menuEl.classList.add("active");
+    updateHeader(name);
+    sidebar.classList.remove("open");
+    if (cache.sales) renderPage(name);
+  }
+  document.querySelectorAll(".menu-item").forEach(function (m) {
+    m.addEventListener("click", function () { window.location.hash = m.getAttribute("data-page"); });
+  });
+  window.addEventListener("hashchange", function () { setActivePage(currentPage()); });
+
+  // ================= date helpers =================
+  function fmtDate(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function today() { return new Date(); }
+  function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return d; }
+
+  var dateFromEl = document.getElementById("dateFrom");
+  var dateToEl = document.getElementById("dateTo");
+  var periodEl = document.getElementById("periodMonth");
+  var onDateEl = document.getElementById("onDate");
+
+  dateToEl.value = fmtDate(today());
+  dateFromEl.value = fmtDate(daysAgo(29));
+  onDateEl.value = fmtDate(today());
+  var nowD = today();
+  periodEl.value = nowD.getFullYear() + "-" + String(nowD.getMonth() + 1).padStart(2, "0");
+  document.getElementById("sotuvMonthPick").value = periodEl.value;
+  document.getElementById("xaridlarMonthPick").value = periodEl.value;
+
+  document.getElementById("presetRow").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-preset]");
+    if (!btn) return;
+    var n = parseInt(btn.getAttribute("data-preset"), 10);
+    dateFromEl.value = fmtDate(daysAgo(n - 1));
+    dateToEl.value = fmtDate(today());
+    document.querySelectorAll("#presetRow .btn").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    loadAll();
+  });
+  [dateFromEl, dateToEl, periodEl, onDateEl].forEach(function (elx) {
+    elx.addEventListener("change", function () {
+      document.querySelectorAll("#presetRow .btn").forEach(function (b) { b.classList.remove("active"); });
+      loadAll();
+    });
+  });
+
+  document.body.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-toggle]");
+    if (!btn) return;
+    var elx = document.getElementById(btn.getAttribute("data-toggle"));
+    elx.classList.toggle("show");
+    btn.textContent = elx.classList.contains("show") ? t("btn_chart") : t("btn_table");
+  });
+
+  // ================= fetch =================
+  function authHeader() { return "Basic " + btoa(cfg.user + ":" + cfg.pass); }
+  function apiGet(path) {
+    return fetch(cfg.base + path, { headers: { "Authorization": authHeader() } }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status + " — " + path);
+      return r.json();
+    });
+  }
+
+  function money(n) {
+    n = Number(n) || 0;
+    var abs = Math.abs(n), sign = n < 0 ? "-" : "", s;
+    if (abs >= 1e9) s = (abs / 1e9).toFixed(2).replace(/\.00$/, "") + " " + t("unit_bln");
+    else if (abs >= 1e6) s = (abs / 1e6).toFixed(2).replace(/\.00$/, "") + " " + t("unit_mln");
+    else if (abs >= 1e3) s = (abs / 1e3).toFixed(1).replace(/\.0$/, "") + " " + t("unit_ming");
+    else s = abs.toFixed(0);
+    return sign + s + " " + t("unit_som");
+  }
+  function moneyFull(n) { n = Number(n) || 0; return n.toLocaleString("ru-RU") + " " + t("unit_som"); }
+
+  var errBanner = document.getElementById("errBanner");
+  function showError(msg) { errBanner.textContent = msg; errBanner.classList.add("show"); }
+  function clearError() { errBanner.classList.remove("show"); }
+
+  var tooltipEl = document.getElementById("tooltip");
+  function showTooltip(x, y, html) {
+    tooltipEl.innerHTML = html;
+    tooltipEl.style.left = x + "px"; tooltipEl.style.top = (y - 10) + "px";
+    tooltipEl.classList.add("show");
+  }
+  function hideTooltip() { tooltipEl.classList.remove("show"); }
+
+  var svgNS = "http://www.w3.org/2000/svg";
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(svgNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function niceMax(v) {
+    if (v <= 0) return 10;
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var n = v / mag;
+    var step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+    return step * mag;
+  }
+
+  function renderTable(containerId, headers, rows) {
+    var c = document.getElementById(containerId);
+    if (!c) return;
+    var tbl = document.createElement("table");
+    tbl.className = "data-table";
+    var thead = document.createElement("thead"), trh = document.createElement("tr");
+    headers.forEach(function (h) { var th = document.createElement("th"); th.textContent = h; trh.appendChild(th); });
+    thead.appendChild(trh); tbl.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    rows.forEach(function (row) {
+      var tr = document.createElement("tr");
+      row.forEach(function (cell) { var td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    c.innerHTML = ""; c.appendChild(tbl);
+  }
+
+  // ================= single-series day bar chart =================
+  function renderDayChart(wrapId, subId, tableId, seriesName, color, days) {
+    var wrap = document.getElementById(wrapId);
+    wrap.innerHTML = "";
+    var dates = days.map(function (d) { return d.date; }).sort();
+    if (dates.length === 0) {
+      wrap.innerHTML = '<div class="empty">' + t("empty_period") + '</div>';
+      renderTable(tableId, ["—", seriesName], []);
+      return;
+    }
+    var dayMap = {};
+    days.forEach(function (d) { dayMap[d.date] = d.amount; });
+
+    var W = 1000, H = 260, padL = 46, padR = 10, padT = 14, padB = 30;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var maxVal = niceMax(Math.max.apply(null, dates.map(function (d) { return dayMap[d] || 0; }).concat([1])));
+
+    var svg = svgEl("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, preserveAspectRatio: "xMidYMid meet" });
+    var steps = 4;
+    for (var s = 0; s <= steps; s++) {
+      var gy = padT + plotH - (plotH * s / steps);
+      svg.appendChild(svgEl("line", { class: s === 0 ? "baseline-line" : "grid-line", x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      var lbl = svgEl("text", { class: "axis-label", x: padL - 6, y: gy + 3, "text-anchor": "end" });
+      lbl.textContent = money(maxVal * s / steps).replace(" " + t("unit_som"), "");
+      svg.appendChild(lbl);
+    }
+
+    var groupW = plotW / dates.length;
+    var barW = Math.min(26, groupW * 0.5);
+
+    dates.forEach(function (d, i) {
+      var gx = padL + groupW * i + groupW / 2;
+      var v = dayMap[d] || 0;
+      var h = plotH * (v / maxVal);
+      var baseY = padT + plotH;
+      svg.appendChild(svgEl("rect", { class: "bar", x: gx - barW / 2, y: baseY - h, width: barW, height: Math.max(h, v > 0 ? 1 : 0), rx: 3, fill: color }));
+      var hit = svgEl("rect", { x: gx - groupW / 2, y: padT, width: groupW, height: plotH, fill: "transparent" });
+      hit.addEventListener("pointermove", function (e) {
+        showTooltip(e.pageX, e.pageY, '<div>' + d + '</div><div><span class="t-val">' + moneyFull(v) + '</span></div>');
+      });
+      hit.addEventListener("pointerleave", hideTooltip);
+      svg.appendChild(hit);
+      if (dates.length <= 14 || i % Math.ceil(dates.length / 10) === 0) {
+        var xlbl = svgEl("text", { class: "axis-label", x: gx, y: H - 8, "text-anchor": "middle" });
+        xlbl.textContent = d.slice(5);
+        svg.appendChild(xlbl);
+      }
+    });
+    wrap.appendChild(svg);
+
+    if (subId) {
+      var total = dates.reduce(function (a, d) { return a + (dayMap[d] || 0); }, 0);
+      document.getElementById(subId).textContent = dates.length + " " + t("days_word") + " · " + moneyFull(total);
+    }
+    renderTable(tableId, ["—", seriesName], dates.map(function (d) { return [d, moneyFull(dayMap[d] || 0)]; }));
+  }
+
+  // ================= two-series day bar chart (inflow / outflow) =================
+  function renderFlowChart(wrapId, subId, tableId, days) {
+    var wrap = document.getElementById(wrapId);
+    wrap.innerHTML = "";
+    var dates = days.map(function (d) { return d.date; }).sort();
+    if (dates.length === 0) {
+      wrap.innerHTML = '<div class="empty">' + t("empty_period") + '</div>';
+      renderTable(tableId, ["—", t("legend_inflow"), t("legend_outflow")], []);
+      return;
+    }
+    var dayMap = {};
+    days.forEach(function (d) { dayMap[d.date] = d; });
+
+    var W = 1000, H = 260, padL = 46, padR = 10, padT = 14, padB = 30;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var maxVal = niceMax(Math.max.apply(null, dates.map(function (d) {
+      return Math.max(dayMap[d].inflow || 0, dayMap[d].outflow || 0);
+    }).concat([1])));
+
+    var svg = svgEl("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, preserveAspectRatio: "xMidYMid meet" });
+    var steps = 4;
+    for (var s = 0; s <= steps; s++) {
+      var gy = padT + plotH - (plotH * s / steps);
+      svg.appendChild(svgEl("line", { class: s === 0 ? "baseline-line" : "grid-line", x1: padL, x2: W - padR, y1: gy, y2: gy }));
+      var lbl = svgEl("text", { class: "axis-label", x: padL - 6, y: gy + 3, "text-anchor": "end" });
+      lbl.textContent = money(maxVal * s / steps).replace(" " + t("unit_som"), "");
+      svg.appendChild(lbl);
+    }
+
+    var groupW = plotW / dates.length;
+    var barW = Math.min(16, groupW * 0.32);
+    var gap = 2;
+
+    dates.forEach(function (d, i) {
+      var gx = padL + groupW * i + groupW / 2;
+      var row = dayMap[d];
+      var vIn = row.inflow || 0, vOut = row.outflow || 0;
+      var hIn = plotH * (vIn / maxVal), hOut = plotH * (vOut / maxVal);
+      var baseY = padT + plotH;
+
+      svg.appendChild(svgEl("rect", { class: "bar", x: gx - barW - gap / 2, y: baseY - hIn, width: barW, height: Math.max(hIn, vIn > 0 ? 1 : 0), rx: 3, fill: "var(--series-1)" }));
+      svg.appendChild(svgEl("rect", { class: "bar", x: gx + gap / 2, y: baseY - hOut, width: barW, height: Math.max(hOut, vOut > 0 ? 1 : 0), rx: 3, fill: "var(--series-2)" }));
+
+      var hit = svgEl("rect", { x: gx - groupW / 2, y: padT, width: groupW, height: plotH, fill: "transparent" });
+      hit.addEventListener("pointermove", function (e) {
+        showTooltip(e.pageX, e.pageY,
+          '<div>' + d + '</div>' +
+          '<div><span class="t-val">' + moneyFull(vIn) + '</span> — ' + t("legend_inflow") + '</div>' +
+          '<div><span class="t-val">' + moneyFull(vOut) + '</span> — ' + t("legend_outflow") + '</div>');
+      });
+      hit.addEventListener("pointerleave", hideTooltip);
+      svg.appendChild(hit);
+      if (dates.length <= 14 || i % Math.ceil(dates.length / 10) === 0) {
+        var xlbl = svgEl("text", { class: "axis-label", x: gx, y: H - 8, "text-anchor": "middle" });
+        xlbl.textContent = d.slice(5);
+        svg.appendChild(xlbl);
+      }
+    });
+    wrap.appendChild(svg);
+
+    var totalIn = dates.reduce(function (a, d) { return a + (dayMap[d].inflow || 0); }, 0);
+    var totalOut = dates.reduce(function (a, d) { return a + (dayMap[d].outflow || 0); }, 0);
+    if (subId) {
+      document.getElementById(subId).textContent = dates.length + " " + t("days_word") + " · " +
+        t("legend_inflow") + " " + moneyFull(totalIn) + " · " + t("legend_outflow") + " " + moneyFull(totalOut);
+    }
+    renderTable(tableId, ["—", t("legend_inflow"), t("legend_outflow")], dates.map(function (d) {
+      return [d, moneyFull(dayMap[d].inflow || 0), moneyFull(dayMap[d].outflow || 0)];
+    }));
+  }
+
+  // ================= diverging account bar chart (fixed value column — no collisions) =================
+  function renderAccountChart(wrapId, accounts) {
+    var wrap = document.getElementById(wrapId);
+    wrap.innerHTML = "";
+    if (!accounts || accounts.length === 0) {
+      wrap.innerHTML = '<div class="empty">' + t("empty_category") + '</div>';
+      return;
+    }
+    var W = 1000, rowH = 34, padL = 220, valColW = 110, padR = 14, padT = 10, padB = 10;
+    var plotW = W - padL - valColW - padR;
+    var H = padT + padB + rowH * accounts.length;
+    var maxAbs = niceMax(Math.max.apply(null, accounts.map(function (a) { return Math.abs(a.amount); }).concat([1])));
+    var mid = padL + plotW / 2;
+    var scale = (plotW / 2) / maxAbs;
+    var valColX = padL + plotW + 14;
+
+    var svg = svgEl("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, preserveAspectRatio: "xMidYMid meet" });
+    svg.appendChild(svgEl("line", { class: "baseline-line", x1: mid, x2: mid, y1: padT, y2: H - padB }));
+
+    accounts.forEach(function (a, i) {
+      var cy = padT + rowH * i + rowH / 2, barH = 16;
+      var w = Math.abs(a.amount) * scale;
+      var x = a.amount >= 0 ? mid : mid - w;
+      var color = a.amount >= 0 ? "var(--diverging-pos)" : "var(--diverging-neg)";
+
+      var lbl = svgEl("text", { class: "axis-label", x: padL - 10, y: cy + 4, "text-anchor": "end" });
+      lbl.setAttribute("fill", "var(--text-secondary)");
+      lbl.textContent = a.account + " — " + a.name;
+      svg.appendChild(lbl);
+
+      svg.appendChild(svgEl("rect", { class: "bar", x: x, y: cy - barH / 2, width: Math.max(w, 1), height: barH, rx: 3, fill: color }));
+
+      // value always in its own fixed right-hand column — never collides with the row label or the bar
+      var valLbl = svgEl("text", { class: "axis-label", x: valColX, y: cy + 4, "text-anchor": "start" });
+      valLbl.setAttribute("fill", "var(--text-primary)");
+      valLbl.textContent = money(a.amount);
+      svg.appendChild(valLbl);
+
+      var hit = svgEl("rect", { x: padL, y: cy - rowH / 2, width: plotW, height: rowH, fill: "transparent" });
+      hit.addEventListener("pointermove", function (e) {
+        showTooltip(e.pageX, e.pageY, '<div>' + a.account + " — " + a.name + '</div><div class="t-val">' + moneyFull(a.amount) + '</div>');
+      });
+      hit.addEventListener("pointerleave", hideTooltip);
+      svg.appendChild(hit);
+    });
+    wrap.appendChild(svg);
+  }
+
+  function renderReportBars(wrapId, items /* [{label,val,color}] */) {
+    var wrap = document.getElementById(wrapId);
+    wrap.innerHTML = "";
+    var W = 1000, H = 190, padL = 110, padR = 130, padT = 10, padB = 10;
+    var plotW = W - padL - padR;
+    var maxV = niceMax(Math.max.apply(null, items.map(function (i) { return Math.abs(i.val); }).concat([1])));
+    var rowH = (H - padT - padB) / items.length;
+
+    var svg = svgEl("svg", { class: "chart", viewBox: "0 0 " + W + " " + H, preserveAspectRatio: "xMidYMid meet" });
+    svg.appendChild(svgEl("line", { class: "baseline-line", x1: padL, x2: padL, y1: padT, y2: H - padB }));
+    items.forEach(function (it, i) {
+      var cy = padT + rowH * i + rowH / 2;
+      var barH = Math.min(28, rowH * 0.55);
+      var w = (Math.abs(it.val) / maxV) * plotW;
+      var lbl = svgEl("text", { class: "axis-label", x: padL - 10, y: cy + 4, "text-anchor": "end" });
+      lbl.setAttribute("fill", "var(--text-secondary)");
+      lbl.textContent = it.label;
+      svg.appendChild(lbl);
+      svg.appendChild(svgEl("rect", { class: "bar", x: padL, y: cy - barH / 2, width: Math.max(w, 1), height: barH, rx: 3, fill: it.color }));
+      var vlbl = svgEl("text", { class: "axis-label", x: padL + plotW + 14, y: cy + 4 });
+      vlbl.setAttribute("fill", "var(--text-primary)");
+      vlbl.textContent = moneyFull(it.val);
+      svg.appendChild(vlbl);
+    });
+    wrap.appendChild(svg);
+  }
+
+  function filterAccounts(accounts, prefixes) {
+    return (accounts || []).filter(function (a) {
+      return prefixes.some(function (p) { return a.account.indexOf(p) === 0; });
+    });
+  }
+
+  // ================= richer day/month table (with totals row) =================
+  function renderSalesTable(containerId, seriesName, days) {
+    var c = document.getElementById(containerId);
+    if (!c) return;
+    var sorted = (days || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    var tbl = document.createElement("table");
+    tbl.className = "data-table";
+    var thead = document.createElement("thead"), trh = document.createElement("tr");
+    [t("col_date"), t("col_docs"), seriesName].forEach(function (h) {
+      var th = document.createElement("th"); th.textContent = h; trh.appendChild(th);
+    });
+    thead.appendChild(trh); tbl.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    var totalAmount = 0, totalDocs = 0;
+    sorted.forEach(function (d) {
+      var tr = document.createElement("tr");
+      [d.date, String(d.documents || 0), moneyFull(d.amount || 0)].forEach(function (cell) {
+        var td = document.createElement("td"); td.textContent = cell; tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+      totalAmount += (d.amount || 0); totalDocs += (d.documents || 0);
+    });
+    tbl.appendChild(tbody);
+    var tfoot = document.createElement("tfoot"), trf = document.createElement("tr");
+    [t("row_total"), String(totalDocs), moneyFull(totalAmount)].forEach(function (cell) {
+      var td = document.createElement("td"); td.textContent = cell; trf.appendChild(td);
+    });
+    tfoot.appendChild(trf); tbl.appendChild(tfoot);
+    c.innerHTML = ""; c.appendChild(tbl);
+  }
+
+  // ================= Sotuv / Xaridlar: dashboard-or-table, day-or-month =================
+  var SALES_PAGES = {
+    sotuv: {
+      endpoint: "/sales", cacheKey: "sales", color: "var(--series-1)", legendKey: "legend_sales",
+      totalId: "sotuvTotal", docsId: "sotuvDocs", avgId: "sotuvAvg",
+      chartWrap: "sotuvChartWrap", chartSub: "sotuvChartSub", tableWrap: "sotuvTableWrap",
+      monthPickId: "sotuvMonthPick"
+    },
+    xaridlar: {
+      endpoint: "/expenses", cacheKey: "expenses", color: "var(--series-2)", legendKey: "legend_expense",
+      totalId: "xaridTotal", docsId: "xaridDocs", avgId: "xaridAvg",
+      chartWrap: "xaridChartWrap", chartSub: "xaridChartSub", tableWrap: "xaridTableWrap",
+      monthPickId: "xaridlarMonthPick"
+    }
+  };
+  var pageState = {
+    sotuv: { view: "chart", period: "day" },
+    xaridlar: { view: "chart", period: "day" }
+  };
+  var monthCache = { sotuv: {}, xaridlar: {} };
+
+  function monthBounds(ym) {
+    var parts = ym.split("-");
+    var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10);
+    var first = new Date(y, m - 1, 1);
+    var last = new Date(y, m, 0);
+    return { from: fmtDate(first), to: fmtDate(last) };
+  }
+
+  function ensureMonthData(page, ym) {
+    if (!ym) return Promise.resolve();
+    if (monthCache[page][ym]) return Promise.resolve();
+    var conf = SALES_PAGES[page];
+    var b = monthBounds(ym);
+    return apiGet(conf.endpoint + "?date_from=" + b.from + "&date_to=" + b.to).then(function (data) {
+      monthCache[page][ym] = data;
+    }).catch(function (err) {
+      showError(t("err_load") + ": " + err.message + " — " + t("err_hint"));
+    });
+  }
+
+  function getPageData(page) {
+    var st = pageState[page];
+    if (st.period === "month") {
+      var ym = document.getElementById(SALES_PAGES[page].monthPickId).value;
+      return monthCache[page][ym] || null;
+    }
+    return cache[SALES_PAGES[page].cacheKey];
+  }
+
+  function renderSalesPage(page) {
+    var conf = SALES_PAGES[page], st = pageState[page];
+    var data = getPageData(page);
+    if (!data) return;
+
+    document.getElementById(conf.totalId).textContent = money(data.total_amount);
+    var days = data.days || [];
+    var docs = days.reduce(function (a, d) { return a + (d.documents || 0); }, 0);
+    document.getElementById(conf.docsId).textContent = docs;
+    document.getElementById(conf.avgId).textContent = money(days.length ? (data.total_amount / days.length) : 0);
+
+    var chartWrapEl = document.getElementById(conf.chartWrap);
+    var tableWrapEl = document.getElementById(conf.tableWrap);
+
+    if (st.view === "chart") {
+      chartWrapEl.style.display = "";
+      tableWrapEl.classList.remove("show");
+      renderDayChart(conf.chartWrap, conf.chartSub, conf.tableWrap, t(conf.legendKey), conf.color, days);
+    } else {
+      chartWrapEl.style.display = "none";
+      tableWrapEl.classList.add("show");
+      renderSalesTable(conf.tableWrap, t(conf.legendKey), days);
+      document.getElementById(conf.chartSub).textContent = days.length + " " + t("days_word") + " · " + moneyFull(data.total_amount);
+    }
+  }
+
+  document.querySelectorAll(".view-switch").forEach(function (sw) {
+    sw.addEventListener("click", function (e) {
+      var btn = e.target.closest(".seg-btn");
+      if (!btn) return;
+      var page = sw.getAttribute("data-page");
+      pageState[page].view = btn.getAttribute("data-view");
+      sw.querySelectorAll(".seg-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderSalesPage(page);
+    });
+  });
+
+  document.querySelectorAll(".period-row").forEach(function (row) {
+    var page = row.getAttribute("data-page");
+    var monthPick = row.querySelector(".month-pick");
+    row.querySelector(".period-switch").addEventListener("click", function (e) {
+      var btn = e.target.closest(".seg-btn");
+      if (!btn) return;
+      var mode = btn.getAttribute("data-period");
+      pageState[page].period = mode;
+      row.querySelectorAll(".seg-btn").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      monthPick.classList.toggle("hide", mode !== "month");
+      if (mode === "month") {
+        ensureMonthData(page, monthPick.value).then(function () { renderSalesPage(page); });
+      } else {
+        renderSalesPage(page);
+      }
+    });
+    monthPick.addEventListener("change", function () {
+      ensureMonthData(page, monthPick.value).then(function () { renderSalesPage(page); });
+    });
+  });
+
+  // ================= data cache =================
+  var cache = { sales: null, expenses: null, balance: null, finresult: null, bankflow: null };
+
+  function renderPage(name) {
+    if (!cache.sales) return;
+    var accounts = (cache.balance && cache.balance.accounts) || [];
+
+    if (name === "bank") {
+      var bf = cache.bankflow || { total_inflow: 0, total_outflow: 0, days: [] };
+      document.getElementById("bankInflow").textContent = money(bf.total_inflow);
+      document.getElementById("bankOutflow").textContent = money(bf.total_outflow);
+      var net = (bf.total_inflow || 0) - (bf.total_outflow || 0);
+      var netEl = document.getElementById("bankNet");
+      netEl.textContent = money(net);
+      netEl.className = "value " + (net >= 0 ? "good" : "critical");
+      renderFlowChart("bankFlowWrap", "bankFlowSub", "bankFlowTableWrap", bf.days || []);
+      renderAccountChart("bankWrap", filterAccounts(accounts, ["50", "51", "52", "55"]));
+    }
+    else if (name === "sklad") renderAccountChart("skladWrap", filterAccounts(accounts, ["10", "41", "43", "45"]));
+    else if (name === "ishlab") renderAccountChart("ishlabWrap", filterAccounts(accounts, ["20", "23", "25", "26"]));
+    else if (name === "vositalar") renderAccountChart("vositalarWrap", filterAccounts(accounts, ["01", "02", "04", "05", "08"]));
+    else if (name === "zarplata") renderAccountChart("zarplataWrap", filterAccounts(accounts, ["70"]));
+    else if (name === "sotuv") renderSalesPage("sotuv");
+    else if (name === "xaridlar") renderSalesPage("xaridlar");
+    else if (name === "hisobotlar") {
+      var fr = cache.finresult;
+      document.getElementById("hrRevenue").textContent = money(fr.revenue);
+      document.getElementById("hrCogs").textContent = money(fr.cogs);
+      var hrP = document.getElementById("hrProfit");
+      hrP.textContent = money(fr.profit);
+      hrP.className = "value " + (fr.profit >= 0 ? "good" : "critical");
+      document.getElementById("hrSub").textContent = periodEl.value;
+      renderReportBars("hrChartWrap", [
+        { label: t("kpi_revenue"), val: fr.revenue || 0, color: "var(--series-1)" },
+        { label: t("kpi_cogs"), val: fr.cogs || 0, color: "var(--series-2)" },
+        { label: t("kpi_profit"), val: fr.profit || 0, color: (fr.profit || 0) >= 0 ? "var(--diverging-pos)" : "var(--diverging-neg)" }
+      ]);
+    }
+  }
+
+  // ================= main load =================
+  function loadAll() {
+    clearError();
+    var dFrom = dateFromEl.value, dTo = dateToEl.value, period = periodEl.value, onDate = onDateEl.value;
+    Promise.all([
+      apiGet("/sales?date_from=" + dFrom + "&date_to=" + dTo),
+      apiGet("/expenses?date_from=" + dFrom + "&date_to=" + dTo),
+      apiGet("/balance?on_date=" + onDate),
+      apiGet("/finresult?period=" + period),
+      apiGet("/bankflow?date_from=" + dFrom + "&date_to=" + dTo)
+    ]).then(function (res) {
+      cache.sales = res[0]; cache.expenses = res[1]; cache.balance = res[2]; cache.finresult = res[3]; cache.bankflow = res[4];
+      renderPage(currentPage());
+    }).catch(function (err) {
+      showError(t("err_load") + ": " + err.message + " — " + t("err_hint"));
+    });
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", loadAll);
+
+  applyI18n();
+  setActivePage(currentPage());
+  if (!cfg.user || !cfg.pass) {
+    document.getElementById("cfgBase").value = cfg.base;
+    document.getElementById("cfgUser").value = cfg.user;
+    document.getElementById("cfgPass").value = cfg.pass;
+    settingsPanel.classList.add("show");
+  } else {
+    loadAll();
+  }
+})();
+</script>
+</body>
+</html>

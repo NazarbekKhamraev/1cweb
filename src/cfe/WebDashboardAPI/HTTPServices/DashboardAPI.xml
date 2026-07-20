@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MetaDataObject xmlns="http://v8.1c.ru/8.3/MDClasses" xmlns:app="http://v8.1c.ru/8.2/managed-application/core" xmlns:cfg="http://v8.1c.ru/8.1/data/enterprise/current-config" xmlns:cmi="http://v8.1c.ru/8.2/managed-application/cmi" xmlns:ent="http://v8.1c.ru/8.1/data/enterprise" xmlns:lf="http://v8.1c.ru/8.2/managed-application/logform" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:sys="http://v8.1c.ru/8.1/data/ui/fonts/system" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:web="http://v8.1c.ru/8.1/data/ui/colors/web" xmlns:win="http://v8.1c.ru/8.1/data/ui/colors/windows" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xpr="http://v8.1c.ru/8.3/xcf/predef" xmlns:xr="http://v8.1c.ru/8.3/xcf/readable" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.17">
+	<HTTPService uuid="3e2d7f61-614b-45f6-a5d1-f57d09da6b84">
+		<Properties>
+			<Name>DashboardAPI</Name>
+			<Synonym>
+				<v8:item>
+					<v8:lang>ru</v8:lang>
+					<v8:content>Dashboard API</v8:content>
+				</v8:item>
+			</Synonym>
+			<Comment/>
+			<RootURL>dashboard</RootURL>
+			<ReuseSessions>DontUse</ReuseSessions>
+			<SessionMaxAge>20</SessionMaxAge>
+		</Properties>
+		<ChildObjects>
+			<URLTemplate uuid="0c21bd60-6f98-4a13-bfc5-fae0eba0f7e1">
+				<Properties>
+					<Name>Expenses</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Expenses</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/expenses</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="ebae9c13-1eb0-46b2-80c3-6b63b3d88ee7">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>ExpensesGet</Handler>
+						</Properties>
+					</Method>
+					<Method uuid="51b6d82d-3bb7-4ec3-8137-ea13dfe00ea6">
+						<Properties>
+							<Name>Options</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Options</v8:content>
+							</v8:item>
+							</Synonym>
+							<HTTPMethod>OPTIONS</HTTPMethod>
+							<Handler>CorsPreflight</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+			<URLTemplate uuid="8ac030fc-47ce-4647-95ea-13cb9e5d387c">
+				<Properties>
+					<Name>Balance</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Balance</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/balance</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="aafa2086-9324-4e65-8adc-0d6de385e1c4">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>BalanceGet</Handler>
+						</Properties>
+					</Method>
+					<Method uuid="2c6aa061-302c-465b-8029-817702a897a1">
+						<Properties>
+							<Name>Options</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Options</v8:content>
+							</v8:item>
+							</Synonym>
+							<HTTPMethod>OPTIONS</HTTPMethod>
+							<Handler>CorsPreflight</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+			<URLTemplate uuid="9fb845d3-130e-4316-a2ec-d12e25e3cbe3">
+				<Properties>
+					<Name>Stock</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Stock</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/stock</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="b853dc3f-e6f8-45db-ad3d-1ea7abf7cf47">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>StockGet</Handler>
+						</Properties>
+					</Method>
+					<Method uuid="f8f6a273-3343-4708-83c2-63ad71464ac4">
+						<Properties>
+							<Name>Options</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Options</v8:content>
+							</v8:item>
+							</Synonym>
+							<HTTPMethod>OPTIONS</HTTPMethod>
+							<Handler>CorsPreflight</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+			<URLTemplate uuid="8015420a-847a-45ff-a9e6-bf3eff9fd400">
+				<Properties>
+					<Name>Sales</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Sales</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/sales</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="5e84dce7-f566-4179-9489-541916cd9a71">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>SalesGet</Handler>
+						</Properties>
+					</Method>
+					<Method uuid="72fb598b-fcca-48be-aa77-bc5965f33032">
+						<Properties>
+							<Name>Options</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Options</v8:content>
+							</v8:item>
+							</Synonym>
+							<HTTPMethod>OPTIONS</HTTPMethod>
+							<Handler>CorsPreflight</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+			<URLTemplate uuid="01dc7bbf-f016-4baf-b4f5-666a94fcc682">
+				<Properties>
+					<Name>FinResult</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>Fin result</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/finresult</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="81e946d2-2d19-4381-898f-f19f3b3193e4">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>FinResultGet</Handler>
+						</Properties>
+					</Method>
+					<Method uuid="ae1d2242-13f8-445d-a3db-15b22e40e7f6">
+						<Properties>
+							<Name>Options</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Options</v8:content>
+							</v8:item>
+							</Synonym>
+							<HTTPMethod>OPTIONS</HTTPMethod>
+							<Handler>CorsPreflight</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+			<URLTemplate uuid="6e294d92-f35f-4278-9dad-07b6b4c2a649">
+				<Properties>
+					<Name>BankFlow</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>BankFlow</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/bankflow</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="de29c7b9-3218-4e3c-ac2e-ba80aecbc3f4">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>BankFlowGet</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
+		</ChildObjects>
+	</HTTPService>
+</MetaDataObject>
