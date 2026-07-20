@@ -572,7 +572,10 @@
   // ================= cfg =================
   var LS_KEY = "dashboardCfg";
   function defaultCfg() {
-    return { base: window.location.origin + "/test1/hs/dashboard", user: "", pass: "" };
+    // 1C server always runs locally on the operator's machine, regardless of where
+    // this dashboard page itself is hosted (Apache htdocs, Netlify, etc.) — so
+    // "localhost" here always resolves to the viewer's own machine, not the host.
+    return { base: "http://localhost:8081/test1/hs/dashboard", user: "", pass: "" };
   }
   function loadCfg() {
     try { var raw = localStorage.getItem(LS_KEY); if (raw) return Object.assign(defaultCfg(), JSON.parse(raw)); } catch (e) {}
