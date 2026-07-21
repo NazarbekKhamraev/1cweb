@@ -23,7 +23,7 @@
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Expenses.Method.Get" id="ebae9c13-1eb0-46b2-80c3-6b63b3d88ee7"/>
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Stock.Method.Options" id="f8f6a273-3343-4708-83c2-63ad71464ac4"/>
 		</Metadata>
-		<Metadata name="HTTPService.DashboardAPI.Module" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84.0" configVersion="a6d31972b277211fee44e7f6fc5b00a955fed79f"/>
+		<Metadata name="HTTPService.DashboardAPI.Module" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84.0" configVersion="a7590f9881f4c2b58d85ae97d4e7763bbd715523"/>
 		<Metadata name="Language.Русский" id="779c57ba-01e9-4528-8514-b596dd2af8e2" configVersion="0a6a393ed5095ab25c24bdc5323dfa52e494f9ac"/>
 		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9" configVersion="a7e5970247aba796af10e3395e320ae14181a8dc"/>
 		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль.Rights" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9.0" configVersion="3d2f2138a8364a6e3c076124423e01e6a35bbf6a"/>

@@ -219,6 +219,7 @@
     padding: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.18); width: 220px;
   }
   .month-picker-popup.show { display: block; }
+  .month-picker-popup.wide { width: 260px; }
   .mpp-head {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 8px; padding: 0 2px;
@@ -229,6 +230,8 @@
     border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 14px; line-height: 1;
   }
   .mpp-nav:hover { background: var(--gridline); }
+  .rp-tabs { display: flex; width: 100%; margin-bottom: 8px; }
+  .rp-tabs .seg-btn { flex: 1; padding: 5px 4px; font-size: 11px; }
   .mpp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
   .mpp-cell {
     appearance: none; border: 1px solid transparent; background: transparent; color: var(--text-primary);
@@ -335,21 +338,24 @@
     <span style="color:var(--text-muted); font-size:12px;">—</span>
     <input type="date" id="dateTo">
     <div class="spacer"></div>
-    <label data-i18n="filter_month"></label>
-    <div class="month-picker" id="periodMonthPicker">
+    <label data-i18n="filter_report_period"></label>
+    <div class="month-picker" id="reportPeriodPicker">
       <button type="button" class="month-picker-btn"></button>
-      <input type="month" id="periodMonth" class="month-picker-native" hidden>
-      <div class="month-picker-popup">
+      <div class="month-picker-popup wide">
         <div class="mpp-head">
           <button type="button" class="mpp-nav" data-dir="-1">&#8249;</button>
           <span class="mpp-year"></span>
           <button type="button" class="mpp-nav" data-dir="1">&#8250;</button>
         </div>
-        <div class="mpp-grid"></div>
+        <div class="seg-group rp-tabs">
+          <button type="button" class="seg-btn active" data-rp-type="month" data-i18n="rp_month"></button>
+          <button type="button" class="seg-btn" data-rp-type="quarter" data-i18n="rp_quarter"></button>
+          <button type="button" class="seg-btn" data-rp-type="half" data-i18n="rp_half"></button>
+          <button type="button" class="seg-btn" data-rp-type="year" data-i18n="rp_year"></button>
+        </div>
+        <div class="mpp-grid" id="rpGrid"></div>
       </div>
     </div>
-    <label style="margin-left:4px;" data-i18n="filter_date"></label>
-    <input type="date" id="onDate">
   </div>
 
   <!-- ===================== BANK ===================== -->
@@ -519,7 +525,8 @@
       btn_refresh: "Yangilash", btn_table: "Jadval", btn_chart: "Diagramma",
       period_day: "Kunlar", period_month: "Oy",
       col_date: "Sana", col_docs: "Hujjatlar", row_total: "Jami",
-      filter_period: "Davr:", filter_month: "Oy:", filter_date: "Sana:",
+      filter_period: "Davr:",
+      filter_report_period: "Hisobot davri:", rp_month: "Oy", rp_quarter: "Chorak", rp_half: "Yarim yil", rp_year: "Yil",
       preset_7: "7 kun", preset_30: "30 kun", preset_90: "90 kun",
       kpi_total_sales: "Jami sotuv", kpi_docs_count: "Hujjatlar soni", kpi_avg_daily: "O'rtacha kunlik",
       kpi_total_purchase: "Jami xarid", kpi_revenue: "Daromad", kpi_cogs: "Tannarx", kpi_profit: "Foyda",
@@ -546,7 +553,8 @@
       btn_refresh: "Обновить", btn_table: "Таблица", btn_chart: "Диаграмма",
       period_day: "По дням", period_month: "Месяц",
       col_date: "Дата", col_docs: "Документы", row_total: "Итого",
-      filter_period: "Период:", filter_month: "Месяц:", filter_date: "Дата:",
+      filter_period: "Период:",
+      filter_report_period: "Период отчёта:", rp_month: "Месяц", rp_quarter: "Квартал", rp_half: "Полугодие", rp_year: "Год",
       preset_7: "7 дней", preset_30: "30 дней", preset_90: "90 дней",
       kpi_total_sales: "Всего продаж", kpi_docs_count: "Кол-во документов", kpi_avg_daily: "Среднедневное",
       kpi_total_purchase: "Всего закупок", kpi_revenue: "Выручка", kpi_cogs: "Себестоимость", kpi_profit: "Прибыль",
@@ -573,7 +581,8 @@
       btn_refresh: "Refresh", btn_table: "Table", btn_chart: "Chart",
       period_day: "Daily", period_month: "Month",
       col_date: "Date", col_docs: "Documents", row_total: "Total",
-      filter_period: "Period:", filter_month: "Month:", filter_date: "Date:",
+      filter_period: "Period:",
+      filter_report_period: "Report period:", rp_month: "Month", rp_quarter: "Quarter", rp_half: "Half-year", rp_year: "Year",
       preset_7: "7 days", preset_30: "30 days", preset_90: "90 days",
       kpi_total_sales: "Total sales", kpi_docs_count: "Documents", kpi_avg_daily: "Daily average",
       kpi_total_purchase: "Total purchases", kpi_revenue: "Revenue", kpi_cogs: "COGS", kpi_profit: "Profit",
@@ -706,67 +715,98 @@
 
   // ================= date helpers =================
   function fmtDate(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function fmtDateDMY(iso) { var p = iso.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+  function fmtAxisDM(iso) { var p = iso.split("-"); return p[2] + "/" + p[1]; }
   function today() { return new Date(); }
   function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return d; }
 
   var dateFromEl = document.getElementById("dateFrom");
   var dateToEl = document.getElementById("dateTo");
-  var periodEl = document.getElementById("periodMonth");
-  var onDateEl = document.getElementById("onDate");
 
   dateToEl.value = fmtDate(today());
   dateFromEl.value = fmtDate(daysAgo(29));
-  onDateEl.value = fmtDate(today());
   var nowD = today();
-  periodEl.value = nowD.getFullYear() + "-" + String(nowD.getMonth() + 1).padStart(2, "0");
-  document.getElementById("sotuvMonthPick").value = periodEl.value;
-  document.getElementById("xaridlarMonthPick").value = periodEl.value;
+  var defaultYM = nowD.getFullYear() + "-" + String(nowD.getMonth() + 1).padStart(2, "0");
+  document.getElementById("sotuvMonthPick").value = defaultYM;
+  document.getElementById("xaridlarMonthPick").value = defaultYM;
 
-  // ================= custom year-nav month picker (replaces the bare <input type=month>) =================
-  function setupMonthPicker(wrapEl) {
-    var nativeInput = wrapEl.querySelector(".month-picker-native");
+  // ================= report period (month / quarter / half-year / year) — drives Hisobotlar + balance snapshot =================
+  var reportPeriod = { type: "month", year: nowD.getFullYear(), index: nowD.getMonth() + 1 };
+
+  function reportPeriodBounds() {
+    var y = reportPeriod.year;
+    if (reportPeriod.type === "month") {
+      var m = reportPeriod.index;
+      return { from: fmtDate(new Date(y, m - 1, 1)), to: fmtDate(new Date(y, m, 0)) };
+    }
+    if (reportPeriod.type === "quarter") {
+      var qm = (reportPeriod.index - 1) * 3;
+      return { from: fmtDate(new Date(y, qm, 1)), to: fmtDate(new Date(y, qm + 3, 0)) };
+    }
+    if (reportPeriod.type === "half") {
+      var hm = (reportPeriod.index - 1) * 6;
+      return { from: fmtDate(new Date(y, hm, 1)), to: fmtDate(new Date(y, hm + 6, 0)) };
+    }
+    return { from: fmtDate(new Date(y, 0, 1)), to: fmtDate(new Date(y, 11, 31)) };
+  }
+  function reportPeriodLabel() {
+    var y = reportPeriod.year;
+    if (reportPeriod.type === "month") return MONTH_NAMES[lang][reportPeriod.index - 1] + " " + y;
+    if (reportPeriod.type === "quarter") return t("rp_quarter") + " " + reportPeriod.index + " · " + y;
+    if (reportPeriod.type === "half") return t("rp_half") + " " + reportPeriod.index + " · " + y;
+    return String(y);
+  }
+
+  function setupReportPeriodPicker() {
+    var wrapEl = document.getElementById("reportPeriodPicker");
     var btn = wrapEl.querySelector(".month-picker-btn");
     var popup = wrapEl.querySelector(".month-picker-popup");
     var yearLbl = wrapEl.querySelector(".mpp-year");
-    var grid = wrapEl.querySelector(".mpp-grid");
-    var viewYear = nativeInput.value ? parseInt(nativeInput.value.split("-")[0], 10) : today().getFullYear();
+    var grid = wrapEl.querySelector("#rpGrid");
+    var tabsWrap = wrapEl.querySelector(".rp-tabs");
+    var viewYear = reportPeriod.year;
+    var viewType = reportPeriod.type;
 
-    function fmtLabel(ym) {
-      var parts = ym.split("-");
-      return MONTH_NAMES[lang][parseInt(parts[1], 10) - 1] + " " + parts[0];
-    }
-    function renderBtn() {
-      btn.textContent = nativeInput.value ? fmtLabel(nativeInput.value) : t("filter_month");
+    function renderBtn() { btn.textContent = reportPeriodLabel(); }
+
+    function addCell(label, idx) {
+      var isActive = viewType === reportPeriod.type && viewYear === reportPeriod.year && idx === reportPeriod.index;
+      var cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "mpp-cell" + (isActive ? " active" : "");
+      cell.textContent = label;
+      cell.addEventListener("click", function () {
+        reportPeriod = { type: viewType, year: viewYear, index: idx };
+        popup.classList.remove("show");
+        renderBtn();
+        loadAll();
+      });
+      grid.appendChild(cell);
     }
     function renderGrid() {
       yearLbl.textContent = viewYear;
       grid.innerHTML = "";
-      for (var m = 1; m <= 12; m++) {
-        var ym = viewYear + "-" + String(m).padStart(2, "0");
-        var cell = document.createElement("button");
-        cell.type = "button";
-        cell.className = "mpp-cell" + (ym === nativeInput.value ? " active" : "");
-        cell.textContent = MONTH_NAMES[lang][m - 1];
-        (function (ymValue) {
-          cell.addEventListener("click", function () {
-            nativeInput.value = ymValue;
-            nativeInput.dispatchEvent(new Event("change", { bubbles: true }));
-            popup.classList.remove("show");
-            renderBtn();
-          });
-        })(ym);
-        grid.appendChild(cell);
+      if (viewType === "month") {
+        grid.style.gridTemplateColumns = "repeat(3, 1fr)";
+        for (var m = 1; m <= 12; m++) addCell(MONTH_NAMES[lang][m - 1], m);
+      } else if (viewType === "quarter") {
+        grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+        for (var q = 1; q <= 4; q++) addCell(t("rp_quarter") + " " + q, q);
+      } else if (viewType === "half") {
+        grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+        for (var h = 1; h <= 2; h++) addCell(t("rp_half") + " " + h, h);
+      } else {
+        grid.style.gridTemplateColumns = "repeat(1, 1fr)";
+        addCell(String(viewYear), 1);
       }
     }
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      var isOpen = popup.classList.contains("show");
-      document.querySelectorAll(".month-picker-popup.show").forEach(function (p) { p.classList.remove("show"); });
-      if (!isOpen) {
-        viewYear = nativeInput.value ? parseInt(nativeInput.value.split("-")[0], 10) : today().getFullYear();
-        renderGrid();
-        popup.classList.add("show");
-      }
+    tabsWrap.addEventListener("click", function (e) {
+      var b = e.target.closest(".seg-btn");
+      if (!b) return;
+      viewType = b.getAttribute("data-rp-type");
+      tabsWrap.querySelectorAll(".seg-btn").forEach(function (x) { x.classList.remove("active"); });
+      b.classList.add("active");
+      renderGrid();
     });
     wrapEl.querySelectorAll(".mpp-nav").forEach(function (navBtn) {
       navBtn.addEventListener("click", function (e) {
@@ -775,6 +815,18 @@
         renderGrid();
       });
     });
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var isOpen = popup.classList.contains("show");
+      document.querySelectorAll(".month-picker-popup.show").forEach(function (p) { p.classList.remove("show"); });
+      if (!isOpen) {
+        viewYear = reportPeriod.year;
+        viewType = reportPeriod.type;
+        tabsWrap.querySelectorAll(".seg-btn").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-rp-type") === viewType); });
+        renderGrid();
+        popup.classList.add("show");
+      }
+    });
     popup.addEventListener("click", function (e) { e.stopPropagation(); });
     renderBtn();
     monthPickerRefreshers.push(renderBtn);
@@ -782,7 +834,7 @@
   document.addEventListener("click", function () {
     document.querySelectorAll(".month-picker-popup.show").forEach(function (p) { p.classList.remove("show"); });
   });
-  setupMonthPicker(document.getElementById("periodMonthPicker"));
+  setupReportPeriodPicker();
 
   document.getElementById("presetRow").addEventListener("click", function (e) {
     var btn = e.target.closest("button[data-preset]");
@@ -794,7 +846,7 @@
     btn.classList.add("active");
     loadAll();
   });
-  [dateFromEl, dateToEl, periodEl, onDateEl].forEach(function (elx) {
+  [dateFromEl, dateToEl].forEach(function (elx) {
     elx.addEventListener("change", function () {
       document.querySelectorAll("#presetRow .btn").forEach(function (b) { b.classList.remove("active"); });
       loadAll();
@@ -911,13 +963,13 @@
       svg.appendChild(svgEl("rect", { class: "bar", x: gx - barW / 2, y: baseY - h, width: barW, height: Math.max(h, v > 0 ? 1 : 0), rx: 3, fill: color }));
       var hit = svgEl("rect", { x: gx - groupW / 2, y: padT, width: groupW, height: plotH, fill: "transparent" });
       hit.addEventListener("pointermove", function (e) {
-        showTooltip(e.pageX, e.pageY, '<div>' + d + '</div><div><span class="t-val">' + moneyFull(v) + '</span></div>');
+        showTooltip(e.pageX, e.pageY, '<div>' + fmtDateDMY(d) + '</div><div><span class="t-val">' + moneyFull(v) + '</span></div>');
       });
       hit.addEventListener("pointerleave", hideTooltip);
       svg.appendChild(hit);
       if (dates.length <= 14 || i % Math.ceil(dates.length / 10) === 0) {
         var xlbl = svgEl("text", { class: "axis-label", x: gx, y: H - 8, "text-anchor": "middle" });
-        xlbl.textContent = d.slice(5);
+        xlbl.textContent = fmtAxisDM(d);
         svg.appendChild(xlbl);
       }
     });
@@ -927,10 +979,10 @@
       var total = dates.reduce(function (a, d) { return a + (dayMap[d] || 0); }, 0);
       document.getElementById(subId).textContent = dates.length + " " + t("days_word") + " · " + moneyFull(total);
     }
-    renderTable(tableId, ["—", seriesName], dates.map(function (d) { return [d, moneyFull(dayMap[d] || 0)]; }));
+    renderTable(tableId, ["—", seriesName], dates.map(function (d) { return [fmtDateDMY(d), moneyFull(dayMap[d] || 0)]; }));
   }
 
-  // ================= two-series day bar chart (inflow / outflow) =================
+  // ================= two-series flow chart (inflow / outflow) — bars for few days, lines for many =================
   function renderFlowChart(wrapId, subId, tableId, days) {
     var wrap = document.getElementById(wrapId);
     wrap.innerHTML = "";
@@ -959,35 +1011,81 @@
       svg.appendChild(lbl);
     }
 
-    var groupW = plotW / dates.length;
-    var barW = Math.min(16, groupW * 0.32);
-    var gap = 2;
+    var useLines = dates.length > 60;
+    var baseY = padT + plotH;
 
-    dates.forEach(function (d, i) {
-      var gx = padL + groupW * i + groupW / 2;
-      var row = dayMap[d];
-      var vIn = row.inflow || 0, vOut = row.outflow || 0;
-      var hIn = plotH * (vIn / maxVal), hOut = plotH * (vOut / maxVal);
-      var baseY = padT + plotH;
+    if (useLines) {
+      var stepX = dates.length > 1 ? plotW / (dates.length - 1) : 0;
+      var xAt = function (i) { return padL + stepX * i; };
+      var yAt = function (v) { return baseY - plotH * (v / maxVal); };
 
-      svg.appendChild(svgEl("rect", { class: "bar", x: gx - barW - gap / 2, y: baseY - hIn, width: barW, height: Math.max(hIn, vIn > 0 ? 1 : 0), rx: 3, fill: "var(--series-1)" }));
-      svg.appendChild(svgEl("rect", { class: "bar", x: gx + gap / 2, y: baseY - hOut, width: barW, height: Math.max(hOut, vOut > 0 ? 1 : 0), rx: 3, fill: "var(--series-2)" }));
-
-      var hit = svgEl("rect", { x: gx - groupW / 2, y: padT, width: groupW, height: plotH, fill: "transparent" });
-      hit.addEventListener("pointermove", function (e) {
-        showTooltip(e.pageX, e.pageY,
-          '<div>' + d + '</div>' +
-          '<div><span class="t-val">' + moneyFull(vIn) + '</span> — ' + t("legend_inflow") + '</div>' +
-          '<div><span class="t-val">' + moneyFull(vOut) + '</span> — ' + t("legend_outflow") + '</div>');
+      [{ key: "inflow", color: "var(--series-1)" }, { key: "outflow", color: "var(--series-2)" }].forEach(function (s) {
+        var d = "";
+        dates.forEach(function (dt, i) {
+          var v = dayMap[dt][s.key] || 0;
+          d += (i === 0 ? "M " : "L ") + xAt(i) + " " + yAt(v) + " ";
+        });
+        svg.appendChild(svgEl("path", { d: d, fill: "none", stroke: s.color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }));
       });
-      hit.addEventListener("pointerleave", hideTooltip);
+
+      var crosshair = svgEl("line", { class: "grid-line", x1: 0, x2: 0, y1: padT, y2: baseY, style: "display:none; stroke: var(--text-muted);" });
+      svg.appendChild(crosshair);
+
+      var hit = svgEl("rect", { x: padL, y: padT, width: plotW, height: plotH, fill: "transparent" });
+      hit.addEventListener("pointermove", function (e) {
+        var rectBounds = svg.getBoundingClientRect();
+        var relX = (e.clientX - rectBounds.left) * (W / rectBounds.width);
+        var i = Math.round((relX - padL) / (stepX || 1));
+        i = Math.max(0, Math.min(dates.length - 1, i));
+        var dt = dates[i];
+        crosshair.setAttribute("x1", xAt(i)); crosshair.setAttribute("x2", xAt(i));
+        crosshair.style.display = "";
+        showTooltip(e.pageX, e.pageY,
+          '<div>' + fmtDateDMY(dt) + '</div>' +
+          '<div><span class="t-val">' + moneyFull(dayMap[dt].inflow || 0) + '</span> — ' + t("legend_inflow") + '</div>' +
+          '<div><span class="t-val">' + moneyFull(dayMap[dt].outflow || 0) + '</span> — ' + t("legend_outflow") + '</div>');
+      });
+      hit.addEventListener("pointerleave", function () { crosshair.style.display = "none"; hideTooltip(); });
       svg.appendChild(hit);
-      if (dates.length <= 14 || i % Math.ceil(dates.length / 10) === 0) {
-        var xlbl = svgEl("text", { class: "axis-label", x: gx, y: H - 8, "text-anchor": "middle" });
-        xlbl.textContent = d.slice(5);
-        svg.appendChild(xlbl);
-      }
-    });
+
+      var labelEvery = Math.ceil(dates.length / 8);
+      dates.forEach(function (dt, i) {
+        if (i % labelEvery === 0 || i === dates.length - 1) {
+          var xlbl = svgEl("text", { class: "axis-label", x: xAt(i), y: H - 8, "text-anchor": "middle" });
+          xlbl.textContent = fmtAxisDM(dt);
+          svg.appendChild(xlbl);
+        }
+      });
+    } else {
+      var groupW = plotW / dates.length;
+      var barW = Math.min(16, groupW * 0.32);
+      var gap = 2;
+
+      dates.forEach(function (d, i) {
+        var gx = padL + groupW * i + groupW / 2;
+        var row = dayMap[d];
+        var vIn = row.inflow || 0, vOut = row.outflow || 0;
+        var hIn = plotH * (vIn / maxVal), hOut = plotH * (vOut / maxVal);
+
+        svg.appendChild(svgEl("rect", { class: "bar", x: gx - barW - gap / 2, y: baseY - hIn, width: barW, height: Math.max(hIn, vIn > 0 ? 1 : 0), rx: 3, fill: "var(--series-1)" }));
+        svg.appendChild(svgEl("rect", { class: "bar", x: gx + gap / 2, y: baseY - hOut, width: barW, height: Math.max(hOut, vOut > 0 ? 1 : 0), rx: 3, fill: "var(--series-2)" }));
+
+        var hit = svgEl("rect", { x: gx - groupW / 2, y: padT, width: groupW, height: plotH, fill: "transparent" });
+        hit.addEventListener("pointermove", function (e) {
+          showTooltip(e.pageX, e.pageY,
+            '<div>' + fmtDateDMY(d) + '</div>' +
+            '<div><span class="t-val">' + moneyFull(vIn) + '</span> — ' + t("legend_inflow") + '</div>' +
+            '<div><span class="t-val">' + moneyFull(vOut) + '</span> — ' + t("legend_outflow") + '</div>');
+        });
+        hit.addEventListener("pointerleave", hideTooltip);
+        svg.appendChild(hit);
+        if (dates.length <= 14 || i % Math.ceil(dates.length / 10) === 0) {
+          var xlbl = svgEl("text", { class: "axis-label", x: gx, y: H - 8, "text-anchor": "middle" });
+          xlbl.textContent = fmtAxisDM(d);
+          svg.appendChild(xlbl);
+        }
+      });
+    }
     wrap.appendChild(svg);
 
     var totalIn = dates.reduce(function (a, d) { return a + (dayMap[d].inflow || 0); }, 0);
@@ -997,7 +1095,7 @@
         t("legend_inflow") + " " + moneyFull(totalIn) + " · " + t("legend_outflow") + " " + moneyFull(totalOut);
     }
     renderTable(tableId, ["—", t("legend_inflow"), t("legend_outflow")], dates.map(function (d) {
-      return [d, moneyFull(dayMap[d].inflow || 0), moneyFull(dayMap[d].outflow || 0)];
+      return [fmtDateDMY(d), moneyFull(dayMap[d].inflow || 0), moneyFull(dayMap[d].outflow || 0)];
     }));
   }
 
@@ -1098,7 +1196,7 @@
     var totalAmount = 0, totalDocs = 0;
     sorted.forEach(function (d) {
       var tr = document.createElement("tr");
-      [d.date, String(d.documents || 0), moneyFull(d.amount || 0)].forEach(function (cell) {
+      [fmtDateDMY(d.date), String(d.documents || 0), moneyFull(d.amount || 0)].forEach(function (cell) {
         var td = document.createElement("td"); td.textContent = cell; tr.appendChild(td);
       });
       tbody.appendChild(tr);
@@ -1254,7 +1352,7 @@
       var hrP = document.getElementById("hrProfit");
       hrP.textContent = money(fr.profit);
       hrP.className = "value " + (fr.profit >= 0 ? "good" : "critical");
-      document.getElementById("hrSub").textContent = periodEl.value;
+      document.getElementById("hrSub").textContent = reportPeriodLabel();
       renderReportBars("hrChartWrap", [
         { label: t("kpi_revenue"), val: fr.revenue || 0, color: "var(--series-1)" },
         { label: t("kpi_cogs"), val: fr.cogs || 0, color: "var(--series-2)" },
@@ -1266,12 +1364,13 @@
   // ================= main load =================
   function loadAll() {
     clearError();
-    var dFrom = dateFromEl.value, dTo = dateToEl.value, period = periodEl.value, onDate = onDateEl.value;
+    var dFrom = dateFromEl.value, dTo = dateToEl.value;
+    var rp = reportPeriodBounds();
     Promise.all([
       apiGet("/sales?date_from=" + dFrom + "&date_to=" + dTo),
       apiGet("/expenses?date_from=" + dFrom + "&date_to=" + dTo),
-      apiGet("/balance?on_date=" + onDate),
-      apiGet("/finresult?period=" + period),
+      apiGet("/balance?on_date=" + rp.to),
+      apiGet("/finresult?date_from=" + rp.from + "&date_to=" + rp.to),
       apiGet("/bankflow?date_from=" + dFrom + "&date_to=" + dTo)
     ]).then(function (res) {
       cache.sales = res[0]; cache.expenses = res[1]; cache.balance = res[2]; cache.finresult = res[3]; cache.bankflow = res[4];
