@@ -207,6 +207,36 @@
   }
   .period-row .month-pick.hide { display: none; }
 
+  .month-picker { position: relative; display: inline-block; }
+  .month-picker-btn {
+    appearance: none; font-family: inherit; font-size: 13px; padding: 5px 10px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary); cursor: pointer;
+  }
+  .month-picker-btn:hover { background: var(--gridline); }
+  .month-picker-popup {
+    display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 30;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.18); width: 220px;
+  }
+  .month-picker-popup.show { display: block; }
+  .mpp-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px; padding: 0 2px;
+  }
+  .mpp-head .mpp-year { font-size: 13px; font-weight: 650; }
+  .mpp-nav {
+    appearance: none; border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+    border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .mpp-nav:hover { background: var(--gridline); }
+  .mpp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .mpp-cell {
+    appearance: none; border: 1px solid transparent; background: transparent; color: var(--text-primary);
+    border-radius: 7px; padding: 7px 4px; font-size: 12.5px; font-family: inherit; cursor: pointer; text-align: center;
+  }
+  .mpp-cell:hover { background: var(--gridline); }
+  .mpp-cell.active { background: var(--series-1); color: #fff; }
+
   table.data-table tfoot td {
     font-weight: 700; border-top: 2px solid var(--border); border-bottom: none;
     color: var(--text-primary); font-variant-numeric: tabular-nums;
@@ -306,7 +336,18 @@
     <input type="date" id="dateTo">
     <div class="spacer"></div>
     <label data-i18n="filter_month"></label>
-    <input type="month" id="periodMonth">
+    <div class="month-picker" id="periodMonthPicker">
+      <button type="button" class="month-picker-btn"></button>
+      <input type="month" id="periodMonth" class="month-picker-native" hidden>
+      <div class="month-picker-popup">
+        <div class="mpp-head">
+          <button type="button" class="mpp-nav" data-dir="-1">&#8249;</button>
+          <span class="mpp-year"></span>
+          <button type="button" class="mpp-nav" data-dir="1">&#8250;</button>
+        </div>
+        <div class="mpp-grid"></div>
+      </div>
+    </div>
     <label style="margin-left:4px;" data-i18n="filter_date"></label>
     <input type="date" id="onDate">
   </div>
@@ -548,6 +589,13 @@
       unit_bln: "bn", unit_mln: "mln", unit_ming: "K", unit_som: "UZS", days_word: "days"
     }
   };
+  var MONTH_NAMES = {
+    uz: ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"],
+    ru: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  };
+  var monthPickerRefreshers = [];
+
   var lang = localStorage.getItem("dashboardLang") || "uz";
   function t(key) { return (DICT[lang] && DICT[lang][key]) || key; }
   function applyI18n() {
@@ -558,6 +606,7 @@
     document.querySelectorAll(".lang-btn").forEach(function (b) {
       b.classList.toggle("active", b.getAttribute("data-lang") === lang);
     });
+    monthPickerRefreshers.forEach(function (fn) { fn(); });
   }
   document.getElementById("langGroup").addEventListener("click", function (e) {
     var btn = e.target.closest(".lang-btn");
@@ -672,6 +721,68 @@
   periodEl.value = nowD.getFullYear() + "-" + String(nowD.getMonth() + 1).padStart(2, "0");
   document.getElementById("sotuvMonthPick").value = periodEl.value;
   document.getElementById("xaridlarMonthPick").value = periodEl.value;
+
+  // ================= custom year-nav month picker (replaces the bare <input type=month>) =================
+  function setupMonthPicker(wrapEl) {
+    var nativeInput = wrapEl.querySelector(".month-picker-native");
+    var btn = wrapEl.querySelector(".month-picker-btn");
+    var popup = wrapEl.querySelector(".month-picker-popup");
+    var yearLbl = wrapEl.querySelector(".mpp-year");
+    var grid = wrapEl.querySelector(".mpp-grid");
+    var viewYear = nativeInput.value ? parseInt(nativeInput.value.split("-")[0], 10) : today().getFullYear();
+
+    function fmtLabel(ym) {
+      var parts = ym.split("-");
+      return MONTH_NAMES[lang][parseInt(parts[1], 10) - 1] + " " + parts[0];
+    }
+    function renderBtn() {
+      btn.textContent = nativeInput.value ? fmtLabel(nativeInput.value) : t("filter_month");
+    }
+    function renderGrid() {
+      yearLbl.textContent = viewYear;
+      grid.innerHTML = "";
+      for (var m = 1; m <= 12; m++) {
+        var ym = viewYear + "-" + String(m).padStart(2, "0");
+        var cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "mpp-cell" + (ym === nativeInput.value ? " active" : "");
+        cell.textContent = MONTH_NAMES[lang][m - 1];
+        (function (ymValue) {
+          cell.addEventListener("click", function () {
+            nativeInput.value = ymValue;
+            nativeInput.dispatchEvent(new Event("change", { bubbles: true }));
+            popup.classList.remove("show");
+            renderBtn();
+          });
+        })(ym);
+        grid.appendChild(cell);
+      }
+    }
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var isOpen = popup.classList.contains("show");
+      document.querySelectorAll(".month-picker-popup.show").forEach(function (p) { p.classList.remove("show"); });
+      if (!isOpen) {
+        viewYear = nativeInput.value ? parseInt(nativeInput.value.split("-")[0], 10) : today().getFullYear();
+        renderGrid();
+        popup.classList.add("show");
+      }
+    });
+    wrapEl.querySelectorAll(".mpp-nav").forEach(function (navBtn) {
+      navBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        viewYear += parseInt(navBtn.getAttribute("data-dir"), 10);
+        renderGrid();
+      });
+    });
+    popup.addEventListener("click", function (e) { e.stopPropagation(); });
+    renderBtn();
+    monthPickerRefreshers.push(renderBtn);
+  }
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".month-picker-popup.show").forEach(function (p) { p.classList.remove("show"); });
+  });
+  setupMonthPicker(document.getElementById("periodMonthPicker"));
 
   document.getElementById("presetRow").addEventListener("click", function (e) {
     var btn = e.target.closest("button[data-preset]");
