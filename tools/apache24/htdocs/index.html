@@ -240,6 +240,8 @@
   .mpp-cell:hover { background: var(--gridline); }
   .mpp-cell.active { background: var(--series-1); color: #fff; }
 
+  .table-scroll { overflow-x: auto; margin-top: 4px; }
+  .table-scroll table.data-table { min-width: 900px; }
   table.data-table tfoot td {
     font-weight: 700; border-top: 2px solid var(--border); border-bottom: none;
     color: var(--text-primary); font-variant-numeric: tabular-nums;
@@ -484,6 +486,10 @@
       <div class="card-head"><div><h2 data-i18n="nav_hisobotlar"></h2><div class="card-sub" id="hrSub">&nbsp;</div></div></div>
       <div class="chart-wrap" id="hrChartWrap"></div>
     </div>
+    <div class="card">
+      <div class="card-head"><div><h2 data-i18n="hr_monthly_title"></h2><div class="card-sub" id="hrMonthlySub">&nbsp;</div></div></div>
+      <div class="table-scroll" id="hrMonthlyTableWrap"></div>
+    </div>
     <div class="data-note" data-i18n="note_hisobotlar"></div>
   </section>
 
@@ -530,6 +536,9 @@
       preset_7: "7 kun", preset_30: "30 kun", preset_90: "90 kun",
       kpi_total_sales: "Jami sotuv", kpi_docs_count: "Hujjatlar soni", kpi_avg_daily: "O'rtacha kunlik",
       kpi_total_purchase: "Jami xarid", kpi_revenue: "Daromad", kpi_cogs: "Tannarx", kpi_profit: "Foyda",
+      hr_monthly_title: "Oylik moliyaviy natija (yil bo'yicha)", hr_fx_income: "Kurs farqi daromadi",
+      hr_admin: "Ma'muriy xarajatlar", hr_other_exp: "Boshqa operatsion xarajatlar", hr_fx_loss: "Kurs farqi zarari",
+      hr_other_fin: "Boshqa moliyaviy xarajatlar", hr_tax: "Foyda solig'i", hr_tax_estimate: "Hisoblangan soliq (~15%)",
       kpi_inflow: "Kirim (davr)", kpi_outflow: "Chiqim (davr)", kpi_netflow: "Sof oqim",
       bank_flow_title: "Kunlik kirim-chiqim", bank_balance_title: "Hisoblar balansi",
       legend_sales: "Sotuv", legend_expense: "Xarid", legend_inflow: "Kirim", legend_outflow: "Chiqim",
@@ -558,6 +567,9 @@
       preset_7: "7 дней", preset_30: "30 дней", preset_90: "90 дней",
       kpi_total_sales: "Всего продаж", kpi_docs_count: "Кол-во документов", kpi_avg_daily: "Среднедневное",
       kpi_total_purchase: "Всего закупок", kpi_revenue: "Выручка", kpi_cogs: "Себестоимость", kpi_profit: "Прибыль",
+      hr_monthly_title: "Помесячный финансовый результат (за год)", hr_fx_income: "Доходы от курсовых разниц",
+      hr_admin: "Административные расходы", hr_other_exp: "Прочие операционные расходы", hr_fx_loss: "Убытки от курсовых разниц",
+      hr_other_fin: "Прочие финансовые расходы", hr_tax: "Налог на прибыль", hr_tax_estimate: "Расчётный налог (~15%)",
       kpi_inflow: "Приход (период)", kpi_outflow: "Расход (период)", kpi_netflow: "Чистый поток",
       bank_flow_title: "Приход и расход по дням", bank_balance_title: "Баланс по счетам",
       legend_sales: "Продажи", legend_expense: "Закупки", legend_inflow: "Приход", legend_outflow: "Расход",
@@ -586,6 +598,9 @@
       preset_7: "7 days", preset_30: "30 days", preset_90: "90 days",
       kpi_total_sales: "Total sales", kpi_docs_count: "Documents", kpi_avg_daily: "Daily average",
       kpi_total_purchase: "Total purchases", kpi_revenue: "Revenue", kpi_cogs: "COGS", kpi_profit: "Profit",
+      hr_monthly_title: "Monthly financial result (by year)", hr_fx_income: "FX gain income",
+      hr_admin: "Admin expenses", hr_other_exp: "Other operating expenses", hr_fx_loss: "FX loss",
+      hr_other_fin: "Other financial expenses", hr_tax: "Income tax", hr_tax_estimate: "Estimated tax (~15%)",
       kpi_inflow: "Inflow (period)", kpi_outflow: "Outflow (period)", kpi_netflow: "Net flow",
       bank_flow_title: "Daily cash in/out", bank_balance_title: "Account balances",
       legend_sales: "Sales", legend_expense: "Purchases", legend_inflow: "Inflow", legend_outflow: "Outflow",
@@ -1322,7 +1337,7 @@
   });
 
   // ================= data cache =================
-  var cache = { sales: null, expenses: null, balance: null, finresult: null, bankflow: null };
+  var cache = { sales: null, expenses: null, balance: null, finresult: null, bankflow: null, monthlyreport: null };
 
   function renderPage(name) {
     if (!cache.sales) return;
@@ -1358,7 +1373,51 @@
         { label: t("kpi_cogs"), val: fr.cogs || 0, color: "var(--series-2)" },
         { label: t("kpi_profit"), val: fr.profit || 0, color: (fr.profit || 0) >= 0 ? "var(--diverging-pos)" : "var(--diverging-neg)" }
       ]);
+      document.getElementById("hrMonthlySub").textContent = reportPeriod.year;
+      if (cache.monthlyreport) renderMonthlyReportTable("hrMonthlyTableWrap", cache.monthlyreport);
     }
+  }
+
+  // ================= Hisobotlar: full-year monthly breakdown table =================
+  function renderMonthlyReportTable(containerId, data) {
+    var c = document.getElementById(containerId);
+    if (!c) return;
+    var headers = [t("filter_period"), t("legend_sales"), t("hr_fx_income"), t("kpi_cogs"), t("hr_admin"),
+      t("hr_other_exp"), t("hr_fx_loss"), t("hr_other_fin"), t("hr_tax"), t("kpi_profit"), t("hr_tax_estimate")];
+    var tbl = document.createElement("table");
+    tbl.className = "data-table";
+    var thead = document.createElement("thead"), trh = document.createElement("tr");
+    headers.forEach(function (h) { var th = document.createElement("th"); th.textContent = h; trh.appendChild(th); });
+    thead.appendChild(trh); tbl.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    var totals = { sales: 0, fx_income: 0, cogs: 0, admin: 0, other_expenses: 0, fx_loss: 0, other_fin_expenses: 0, tax: 0 };
+    data.months.forEach(function (m) {
+      var tr = document.createElement("tr");
+      var cells = [MONTH_NAMES[lang][m.month - 1], moneyFull(m.sales), moneyFull(m.fx_income), moneyFull(m.cogs),
+        moneyFull(m.admin), moneyFull(m.other_expenses), moneyFull(m.fx_loss), moneyFull(m.other_fin_expenses), moneyFull(m.tax)];
+      cells.forEach(function (cell) { var td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); });
+      var tdProfit = document.createElement("td");
+      tdProfit.textContent = moneyFull(m.profit);
+      tdProfit.className = m.profit >= 0 ? "good" : "critical";
+      tr.appendChild(tdProfit);
+      var tdTax = document.createElement("td");
+      tdTax.textContent = moneyFull(m.tax_estimate);
+      tr.appendChild(tdTax);
+      tbody.appendChild(tr);
+      ["sales", "fx_income", "cogs", "admin", "other_expenses", "fx_loss", "other_fin_expenses", "tax"].forEach(function (k) {
+        totals[k] += (m[k] || 0);
+      });
+    });
+    tbl.appendChild(tbody);
+    var tfoot = document.createElement("tfoot"), trf = document.createElement("tr");
+    var lastMonth = data.months[data.months.length - 1];
+    [t("row_total"), moneyFull(totals.sales), moneyFull(totals.fx_income), moneyFull(totals.cogs), moneyFull(totals.admin),
+      moneyFull(totals.other_expenses), moneyFull(totals.fx_loss), moneyFull(totals.other_fin_expenses), moneyFull(totals.tax),
+      moneyFull(lastMonth ? lastMonth.profit : 0), moneyFull(lastMonth ? lastMonth.tax_estimate : 0)].forEach(function (cell) {
+      var td = document.createElement("td"); td.textContent = cell; trf.appendChild(td);
+    });
+    tfoot.appendChild(trf); tbl.appendChild(tfoot);
+    c.innerHTML = ""; c.appendChild(tbl);
   }
 
   // ================= main load =================
@@ -1371,9 +1430,10 @@
       apiGet("/expenses?date_from=" + dFrom + "&date_to=" + dTo),
       apiGet("/balance?on_date=" + rp.to),
       apiGet("/finresult?date_from=" + rp.from + "&date_to=" + rp.to),
-      apiGet("/bankflow?date_from=" + dFrom + "&date_to=" + dTo)
+      apiGet("/bankflow?date_from=" + dFrom + "&date_to=" + dTo),
+      apiGet("/monthlyreport?year=" + reportPeriod.year)
     ]).then(function (res) {
-      cache.sales = res[0]; cache.expenses = res[1]; cache.balance = res[2]; cache.finresult = res[3]; cache.bankflow = res[4];
+      cache.sales = res[0]; cache.expenses = res[1]; cache.balance = res[2]; cache.finresult = res[3]; cache.bankflow = res[4]; cache.monthlyreport = res[5];
       renderPage(currentPage());
     }).catch(function (err) {
       showError(t("err_load") + ": " + err.message + " — " + t("err_hint"));

@@ -242,6 +242,33 @@
 					</Method>
 				</ChildObjects>
 			</URLTemplate>
+			<URLTemplate uuid="612142e9-5e3a-4b76-8f2e-ca313c7684d1">
+				<Properties>
+					<Name>MonthlyReport</Name>
+					<Synonym>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>MonthlyReport</v8:content>
+						</v8:item>
+					</Synonym>
+					<Template>/monthlyreport</Template>
+				</Properties>
+				<ChildObjects>
+					<Method uuid="8d841206-1c66-4d17-81bd-5ff5ce9f9041">
+						<Properties>
+							<Name>Get</Name>
+							<Synonym>
+								<v8:item>
+									<v8:lang>ru</v8:lang>
+									<v8:content>Get</v8:content>
+								</v8:item>
+							</Synonym>
+							<HTTPMethod>GET</HTTPMethod>
+							<Handler>MonthlyReportGet</Handler>
+						</Properties>
+					</Method>
+				</ChildObjects>
+			</URLTemplate>
 		</ChildObjects>
 	</HTTPService>
 </MetaDataObject>
