@@ -537,12 +537,7 @@
       preset_7: "7 kun", preset_30: "30 kun", preset_90: "90 kun",
       kpi_total_sales: "Jami sotuv", kpi_docs_count: "Hujjatlar soni", kpi_avg_daily: "O'rtacha kunlik",
       kpi_total_purchase: "Jami xarid", kpi_revenue: "Daromad", kpi_cogs: "Tannarx", kpi_profit: "Foyda",
-      hr_monthly_title: "Oylik moliyaviy natija (yil bo'yicha)", hr_fx_income: "Kurs farqi daromadi",
-      hr_admin: "Ma'muriy xarajatlar", hr_other_exp: "Boshqa operatsion xarajatlar", hr_fx_loss: "Kurs farqi zarari",
-      hr_other_fin: "Boshqa moliyaviy xarajatlar", hr_tax: "Foyda solig'i", hr_tax_estimate: "Hisoblangan soliq (~15%)",
-      hr_interest_income: "Foiz daromadi", hr_other_income: "Boshqa daromadlar", hr_selling_exp: "Sotish xarajatlari",
-      hr_disposal_exp: "Aktivlarni chiqarish xarajati", hr_interest_exp: "Foiz xarajati",
-      hr_remuneration_exp: "Mukofot xarajati", hr_other_taxes: "Boshqa soliqlar",
+      hr_monthly_title: "Oylik moliyaviy natija (yil bo'yicha)", hr_tax_estimate: "Hisoblangan soliq (~15%)",
       kpi_inflow: "Kirim (davr)", kpi_outflow: "Chiqim (davr)", kpi_netflow: "Sof oqim",
       bank_flow_title: "Kunlik kirim-chiqim", bank_balance_title: "Hisoblar balansi",
       legend_sales: "Sotuv", legend_expense: "Xarid", legend_inflow: "Kirim", legend_outflow: "Chiqim",
@@ -571,12 +566,7 @@
       preset_7: "7 дней", preset_30: "30 дней", preset_90: "90 дней",
       kpi_total_sales: "Всего продаж", kpi_docs_count: "Кол-во документов", kpi_avg_daily: "Среднедневное",
       kpi_total_purchase: "Всего закупок", kpi_revenue: "Выручка", kpi_cogs: "Себестоимость", kpi_profit: "Прибыль",
-      hr_monthly_title: "Помесячный финансовый результат (за год)", hr_fx_income: "Доходы от курсовых разниц",
-      hr_admin: "Административные расходы", hr_other_exp: "Прочие операционные расходы", hr_fx_loss: "Убытки от курсовых разниц",
-      hr_other_fin: "Прочие финансовые расходы", hr_tax: "Налог на прибыль", hr_tax_estimate: "Расчётный налог (~15%)",
-      hr_interest_income: "Процентные доходы", hr_other_income: "Прочие доходы", hr_selling_exp: "Расходы на продажу",
-      hr_disposal_exp: "Расходы по выбытию активов", hr_interest_exp: "Процентные расходы",
-      hr_remuneration_exp: "Расходы по вознаграждениям", hr_other_taxes: "Другие налоги",
+      hr_monthly_title: "Помесячный финансовый результат (за год)", hr_tax_estimate: "Расчётный налог (~15%)",
       kpi_inflow: "Приход (период)", kpi_outflow: "Расход (период)", kpi_netflow: "Чистый поток",
       bank_flow_title: "Приход и расход по дням", bank_balance_title: "Баланс по счетам",
       legend_sales: "Продажи", legend_expense: "Закупки", legend_inflow: "Приход", legend_outflow: "Расход",
@@ -605,12 +595,7 @@
       preset_7: "7 days", preset_30: "30 days", preset_90: "90 days",
       kpi_total_sales: "Total sales", kpi_docs_count: "Documents", kpi_avg_daily: "Daily average",
       kpi_total_purchase: "Total purchases", kpi_revenue: "Revenue", kpi_cogs: "COGS", kpi_profit: "Profit",
-      hr_monthly_title: "Monthly financial result (by year)", hr_fx_income: "FX gain income",
-      hr_admin: "Admin expenses", hr_other_exp: "Other operating expenses", hr_fx_loss: "FX loss",
-      hr_other_fin: "Other financial expenses", hr_tax: "Income tax", hr_tax_estimate: "Estimated tax (~15%)",
-      hr_interest_income: "Interest income", hr_other_income: "Other income", hr_selling_exp: "Selling expenses",
-      hr_disposal_exp: "Asset disposal expenses", hr_interest_exp: "Interest expense",
-      hr_remuneration_exp: "Remuneration expense", hr_other_taxes: "Other taxes",
+      hr_monthly_title: "Monthly financial result (by year)", hr_tax_estimate: "Estimated tax (~15%)",
       kpi_inflow: "Inflow (period)", kpi_outflow: "Outflow (period)", kpi_netflow: "Net flow",
       bank_flow_title: "Daily cash in/out", bank_balance_title: "Account balances",
       legend_sales: "Sales", legend_expense: "Purchases", legend_inflow: "Inflow", legend_outflow: "Outflow",
@@ -1374,12 +1359,12 @@
       netEl.textContent = money(net);
       netEl.className = "value " + (net >= 0 ? "good" : "critical");
       renderFlowChart("bankFlowWrap", "bankFlowSub", "bankFlowTableWrap", bf.days || []);
-      renderAccountChart("bankWrap", filterAccounts(accounts, ["50", "51", "52", "55"]));
+      renderAccountChart("bankWrap", filterAccounts(accounts, ["51"]));
     }
     else if (name === "sklad") renderAccountChart("skladWrap", filterAccounts(accounts, ["10", "41", "43", "45"]));
     else if (name === "ishlab") renderAccountChart("ishlabWrap", filterAccounts(accounts, ["20", "23", "25", "26"]));
     else if (name === "vositalar") renderAccountChart("vositalarWrap", filterAccounts(accounts, ["01", "02", "04", "05", "08"]));
-    else if (name === "zarplata") renderAccountChart("zarplataWrap", filterAccounts(accounts, ["70"]));
+    else if (name === "zarplata") renderAccountChart("zarplataWrap", filterAccounts(accounts, ["70", "67"]));
     else if (name === "sotuv") renderSalesPage("sotuv");
     else if (name === "xaridlar") renderSalesPage("xaridlar");
     else if (name === "hisobotlar") {
@@ -1401,22 +1386,20 @@
   }
 
   // ================= Hisobotlar: full-year monthly breakdown table =================
-  var MONTHLY_REPORT_FLOW_COLS = [
-    { key: "sales", label: "legend_sales" }, { key: "fx_income", label: "hr_fx_income" },
-    { key: "interest_income", label: "hr_interest_income" }, { key: "other_income", label: "hr_other_income" },
-    { key: "cogs", label: "kpi_cogs" }, { key: "selling_expenses", label: "hr_selling_exp" },
-    { key: "admin", label: "hr_admin" }, { key: "other_expenses", label: "hr_other_exp" },
-    { key: "disposal_expenses", label: "hr_disposal_exp" }, { key: "interest_expense", label: "hr_interest_exp" },
-    { key: "fx_loss", label: "hr_fx_loss" }, { key: "remuneration_expense", label: "hr_remuneration_exp" },
-    { key: "other_fin_expenses", label: "hr_other_fin" }, { key: "tax", label: "hr_tax" },
-    { key: "other_taxes", label: "hr_other_taxes" }
-  ];
   function renderMonthlyReportTable(containerId, data) {
     var c = document.getElementById(containerId);
     if (!c) return;
     var colNames = data.column_names || {};
-    var headers = [t("filter_period")]
-      .concat(MONTHLY_REPORT_FLOW_COLS.map(function (col) { return colNames[col.key] || t(col.label); }))
+    var allKeys = data.flow_keys || [];
+    var totals = {};
+    allKeys.forEach(function (k) { totals[k] = 0; });
+    data.months.forEach(function (m) {
+      allKeys.forEach(function (k) { totals[k] += (m[k] || 0); });
+    });
+    // faqat yil davomida hech bo'lmaganda bir marta nolдан farqli bo'lgan ustunlarni ko'rsatamiz
+    var keys = allKeys.filter(function (k) { return Math.abs(totals[k]) > 0.004; });
+
+    var headers = [t("filter_period")].concat(keys.map(function (k) { return colNames[k] || k; }))
       .concat([t("hr_tax_estimate"), colNames.profit || t("kpi_profit")]);
     var tbl = document.createElement("table");
     tbl.className = "data-table";
@@ -1424,18 +1407,15 @@
     headers.forEach(function (h) { var th = document.createElement("th"); th.textContent = h; trh.appendChild(th); });
     thead.appendChild(trh); tbl.appendChild(thead);
     var tbody = document.createElement("tbody");
-    var totals = {};
-    MONTHLY_REPORT_FLOW_COLS.forEach(function (col) { totals[col.key] = 0; });
     data.months.forEach(function (m) {
       var tr = document.createElement("tr");
       var monthTd = document.createElement("td");
       monthTd.textContent = MONTH_NAMES[lang][m.month - 1];
       tr.appendChild(monthTd);
-      MONTHLY_REPORT_FLOW_COLS.forEach(function (col) {
+      keys.forEach(function (k) {
         var td = document.createElement("td");
-        td.textContent = moneyFull(m[col.key]);
+        td.textContent = moneyFull(m[k]);
         tr.appendChild(td);
-        totals[col.key] += (m[col.key] || 0);
       });
       var tdTax = document.createElement("td");
       tdTax.textContent = moneyFull(m.tax_estimate);
@@ -1449,7 +1429,7 @@
     tbl.appendChild(tbody);
     var tfoot = document.createElement("tfoot"), trf = document.createElement("tr");
     var lastMonth = data.months[data.months.length - 1];
-    var footCells = [t("row_total")].concat(MONTHLY_REPORT_FLOW_COLS.map(function (col) { return moneyFull(totals[col.key]); }))
+    var footCells = [t("row_total")].concat(keys.map(function (k) { return moneyFull(totals[k]); }))
       .concat([moneyFull(lastMonth ? lastMonth.tax_estimate : 0), moneyFull(lastMonth ? lastMonth.profit : 0)]);
     footCells.forEach(function (cell) {
       var td = document.createElement("td"); td.textContent = cell; trf.appendChild(td);

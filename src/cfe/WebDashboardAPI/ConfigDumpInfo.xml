@@ -2,7 +2,7 @@
 <ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.17">
 	<ConfigVersions>
 		<Metadata name="CommonModule.DashboardData" id="66cc9add-b54c-42cc-8a02-87dd392da8cb" configVersion="764addaee92d8811ab33803465e7d95be9e4ca52"/>
-		<Metadata name="CommonModule.DashboardData.Module" id="66cc9add-b54c-42cc-8a02-87dd392da8cb.0" configVersion="9bd0ca9c7b44066283ef1630fd2712a61f361184"/>
+		<Metadata name="CommonModule.DashboardData.Module" id="66cc9add-b54c-42cc-8a02-87dd392da8cb.0" configVersion="92f71b751ba3681ced55b3ef825782d9f0db6a0e"/>
 		<Metadata name="Configuration.WebDashboardAPI" id="77f0e4ca-e27c-46ab-b600-a3edc50b8a18" configVersion="63e58b4e51bed8f92d684b2eae2f76b097e8b74b"/>
 		<Metadata name="HTTPService.DashboardAPI" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84" configVersion="b2c15e960c743e46778561864232dfe44e5ff8b9">
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.FinResult" id="01dc7bbf-f016-4baf-b4f5-666a94fcc682"/>
