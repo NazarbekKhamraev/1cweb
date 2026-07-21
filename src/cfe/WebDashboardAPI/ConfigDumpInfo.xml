@@ -2,7 +2,7 @@
 <ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.17">
 	<ConfigVersions>
 		<Metadata name="CommonModule.DashboardData" id="66cc9add-b54c-42cc-8a02-87dd392da8cb" configVersion="764addaee92d8811ab33803465e7d95be9e4ca52"/>
-		<Metadata name="CommonModule.DashboardData.Module" id="66cc9add-b54c-42cc-8a02-87dd392da8cb.0" configVersion="f2328726f9a77c94eb55d89de7ce1598614e0bce"/>
+		<Metadata name="CommonModule.DashboardData.Module" id="66cc9add-b54c-42cc-8a02-87dd392da8cb.0" configVersion="c0b471d63ce012632dc218da5ca5a0e7f04c8cbd"/>
 		<Metadata name="Configuration.WebDashboardAPI" id="77f0e4ca-e27c-46ab-b600-a3edc50b8a18" configVersion="63e58b4e51bed8f92d684b2eae2f76b097e8b74b"/>
 		<Metadata name="HTTPService.DashboardAPI" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84" configVersion="b2c15e960c743e46778561864232dfe44e5ff8b9">
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.FinResult" id="01dc7bbf-f016-4baf-b4f5-666a94fcc682"/>
@@ -25,7 +25,7 @@
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Expenses.Method.Get" id="ebae9c13-1eb0-46b2-80c3-6b63b3d88ee7"/>
 			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Stock.Method.Options" id="f8f6a273-3343-4708-83c2-63ad71464ac4"/>
 		</Metadata>
-		<Metadata name="HTTPService.DashboardAPI.Module" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84.0" configVersion="83c4f975f8c2d773338e7d7ee878949a1448531f"/>
+		<Metadata name="HTTPService.DashboardAPI.Module" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84.0" configVersion="932d18de29c8a1d147d18e237ca9ad866b72d2b2"/>
 		<Metadata name="Language.Русский" id="779c57ba-01e9-4528-8514-b596dd2af8e2" configVersion="0a6a393ed5095ab25c24bdc5323dfa52e494f9ac"/>
 		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9" configVersion="a7e5970247aba796af10e3395e320ae14181a8dc"/>
 		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль.Rights" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9.0" configVersion="3d2f2138a8364a6e3c076124423e01e6a35bbf6a"/>
