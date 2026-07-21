@@ -240,8 +240,9 @@
   .mpp-cell:hover { background: var(--gridline); }
   .mpp-cell.active { background: var(--series-1); color: #fff; }
 
-  .table-scroll { overflow-x: auto; margin-top: 4px; }
-  .table-scroll table.data-table { min-width: 900px; }
+  .table-scroll { overflow-x: auto; margin-top: 4px; width: 100%; max-width: 100%; }
+  .table-scroll table.data-table { width: max-content; min-width: 100%; }
+  .table-scroll table.data-table th, .table-scroll table.data-table td { white-space: nowrap; }
   table.data-table tfoot td {
     font-weight: 700; border-top: 2px solid var(--border); border-bottom: none;
     color: var(--text-primary); font-variant-numeric: tabular-nums;
@@ -1413,8 +1414,10 @@
   function renderMonthlyReportTable(containerId, data) {
     var c = document.getElementById(containerId);
     if (!c) return;
-    var headers = [t("filter_period")].concat(MONTHLY_REPORT_FLOW_COLS.map(function (col) { return t(col.label); }))
-      .concat([t("hr_tax_estimate"), t("kpi_profit")]);
+    var colNames = data.column_names || {};
+    var headers = [t("filter_period")]
+      .concat(MONTHLY_REPORT_FLOW_COLS.map(function (col) { return colNames[col.key] || t(col.label); }))
+      .concat([t("hr_tax_estimate"), colNames.profit || t("kpi_profit")]);
     var tbl = document.createElement("table");
     tbl.className = "data-table";
     var thead = document.createElement("thead"), trh = document.createElement("tr");
