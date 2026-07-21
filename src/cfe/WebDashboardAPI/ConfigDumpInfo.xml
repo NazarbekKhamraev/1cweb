@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ConfigDumpInfo xmlns="http://v8.1c.ru/8.3/xcf/dumpinfo" xmlns:xen="http://v8.1c.ru/8.3/xcf/enums" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" format="Hierarchical" version="2.17">
+	<ConfigVersions>
+		<Metadata name="CommonModule.DashboardData" id="66cc9add-b54c-42cc-8a02-87dd392da8cb" configVersion="764addaee92d8811ab33803465e7d95be9e4ca52"/>
+		<Metadata name="CommonModule.DashboardData.Module" id="66cc9add-b54c-42cc-8a02-87dd392da8cb.0" configVersion="ecc456e552b139d214ab3b6d87a571bb2538c655"/>
+		<Metadata name="Configuration.WebDashboardAPI" id="77f0e4ca-e27c-46ab-b600-a3edc50b8a18" configVersion="63e58b4e51bed8f92d684b2eae2f76b097e8b74b"/>
+		<Metadata name="HTTPService.DashboardAPI" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84" configVersion="ff858e8ccd9d4a95572aaa44fa2a908258ad50a4">
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.FinResult" id="01dc7bbf-f016-4baf-b4f5-666a94fcc682"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Expenses" id="0c21bd60-6f98-4a13-bfc5-fae0eba0f7e1"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Balance.Method.Options" id="2c6aa061-302c-465b-8029-817702a897a1"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Expenses.Method.Options" id="51b6d82d-3bb7-4ec3-8137-ea13dfe00ea6"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Sales.Method.Get" id="5e84dce7-f566-4179-9489-541916cd9a71"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.BankFlow" id="6e294d92-f35f-4278-9dad-07b6b4c2a649"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Sales.Method.Options" id="72fb598b-fcca-48be-aa77-bc5965f33032"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Sales" id="8015420a-847a-45ff-a9e6-bf3eff9fd400"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.FinResult.Method.Get" id="81e946d2-2d19-4381-898f-f19f3b3193e4"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Balance" id="8ac030fc-47ce-4647-95ea-13cb9e5d387c"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Stock" id="9fb845d3-130e-4316-a2ec-d12e25e3cbe3"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Balance.Method.Get" id="aafa2086-9324-4e65-8adc-0d6de385e1c4"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.FinResult.Method.Options" id="ae1d2242-13f8-445d-a3db-15b22e40e7f6"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Stock.Method.Get" id="b853dc3f-e6f8-45db-ad3d-1ea7abf7cf47"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.BankFlow.Method.Get" id="de29c7b9-3218-4e3c-ac2e-ba80aecbc3f4"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Expenses.Method.Get" id="ebae9c13-1eb0-46b2-80c3-6b63b3d88ee7"/>
+			<Metadata name="HTTPService.DashboardAPI.URLTemplate.Stock.Method.Options" id="f8f6a273-3343-4708-83c2-63ad71464ac4"/>
+		</Metadata>
+		<Metadata name="HTTPService.DashboardAPI.Module" id="3e2d7f61-614b-45f6-a5d1-f57d09da6b84.0" configVersion="a6d31972b277211fee44e7f6fc5b00a955fed79f"/>
+		<Metadata name="Language.Русский" id="779c57ba-01e9-4528-8514-b596dd2af8e2" configVersion="0a6a393ed5095ab25c24bdc5323dfa52e494f9ac"/>
+		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9" configVersion="a7e5970247aba796af10e3395e320ae14181a8dc"/>
+		<Metadata name="Role.WebDashboardAPI_ОсновнаяРоль.Rights" id="5feec113-c604-4dc2-ad24-d07f37fb5cb9.0" configVersion="3d2f2138a8364a6e3c076124423e01e6a35bbf6a"/>
+	</ConfigVersions>
+</ConfigDumpInfo>
