@@ -219,7 +219,7 @@
     padding: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.18); width: 220px;
   }
   .month-picker-popup.show { display: block; }
-  .month-picker-popup.wide { width: 260px; }
+  .month-picker-popup.wide { width: 260px; left: auto; right: 0; }
   .mpp-head {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 8px; padding: 0 2px;
@@ -715,8 +715,8 @@
 
   // ================= date helpers =================
   function fmtDate(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
-  function fmtDateDMY(iso) { var p = iso.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
-  function fmtAxisDM(iso) { var p = iso.split("-"); return p[2] + "/" + p[1]; }
+  function fmtDateDMY(iso) { var p = iso.split("-"); return p[2] + "." + p[1] + "." + p[0]; }
+  function fmtAxisDM(iso) { var p = iso.split("-"); return p[2] + "." + p[1]; }
   function today() { return new Date(); }
   function daysAgo(n) { var d = new Date(); d.setDate(d.getDate() - n); return d; }
 
